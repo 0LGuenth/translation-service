@@ -1,0 +1,6 @@
+# OpenStack application credential
+app_cred_id     = "..."
+app_cred_secret = "..."
+
+key_pair  = "Keypair Name" # Keypair name from Openstack
+vm_prefix = "yourname-translate" # all VMs become <prefix>-master / <prefix>-worker-N
