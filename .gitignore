@@ -1,0 +1,19 @@
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+**/*.tfstate
+**/*.tfstate.*
+**/terraform.tfvars
+**/crash.log
+**/crash.*.log
+
+# Ansible / k3s outputs
+**/generated-inventory.yml
+**/kubeconfig-generated.yaml
+**/kubeconfig*.yaml
+**/dns-credentials.yaml
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
