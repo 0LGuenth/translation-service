@@ -1,0 +1,34 @@
+# wait until VMs finished cloud-init; install k3s via the role.
+---
+- name: Wait for SSH and cloud-init to complete
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH and cloud-init
+      ansible.builtin.import_tasks: tasks/wait.yaml
+
+- name: Deploy k3s cluster
+  hosts: all
+  tags: [k3s]
+  become: true
+
+  # k3s-dhbw-cloud-role defines `kubeconfig_root`.
+  # Source: https://github.com/pfisterer/k3s-dhbw-cloud-role
+  roles:
+    - role: k3s-dhbw-cloud-role
+
+  tasks:
+    - name: Configure k3s
+      ansible.builtin.import_tasks: tasks/k3s-configure.yaml
+
+    - name: Persist kubeconfig_root for subsequent plays
+      ansible.builtin.set_fact:
+        kubeconfig_root: "{{ kubeconfig_root }}"
+      when: k3s_role == 'server'
+
+  handlers:
+    - name: Restart k3s
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ 'k3s' if k3s_role == 'server' else 'k3s-agent' }}"
+        state: restarted
