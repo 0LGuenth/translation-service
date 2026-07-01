@@ -9,7 +9,10 @@ translation backend.
 - `GET /health`: liveness probe target
 - `GET /ready`: readiness probe target
 
-Language codes are ISO 639-1 (2 letters). Text is capped at `MAX_TEXT_LENGTH`.
+Language codes accept ISO 639-1, 639-3, and 639-5 (parsed via
+`golang.org/x/text/language`). Codes are normalized before being forwarded
+(e.g. `deu` -> `de`) so the LLM cache doesn't split across aliases. Text is
+capped at `MAX_TEXT_LENGTH`.
 
 ## Config (env vars)
 
