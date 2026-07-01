@@ -1,0 +1,65 @@
+# Go HTTP gateway
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: translation-api
+  labels:
+    app: translation-api
+spec:
+  # One replica per availability zone
+  replicas: 3
+  selector:
+    matchLabels:
+      app: translation-api
+  template:
+    metadata:
+      labels:
+        app: translation-api
+    spec:
+      # Spread replicas across zones
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          labelSelector:
+            matchLabels:
+              # Must match the pod labels above
+              app: translation-api
+          # Allow imbalance to not block scheduling
+          whenUnsatisfiable: ScheduleAnyway
+      containers:
+        - name: translation-api
+          image: registry.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/translation-api:latest
+          ports:
+            - containerPort: 8000
+          env:
+            # In-cluster URL of the translation backend; TODO change when translation-llm is available
+            - name: TRANSLATION_LLM_URL
+              value: ""
+            - name: MAX_TEXT_LENGTH
+              value: "5000"
+            - name: LLM_TIMEOUT_SECONDS
+              value: "30"
+            # Should stay below terminationGracePeriodSeconds (default 30s) so in-flight requests are not killed
+            - name: SHUTDOWN_TIMEOUT_SECONDS
+              value: "20"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "128Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 15
+            failureThreshold: 2
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 1
