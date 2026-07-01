@@ -13,6 +13,9 @@
 **/kubeconfig*.yaml
 **/dns-credentials.yaml
 
+# OpenStack Credentials
+clouds.yaml
+
 # IDE / OS
 .idea/
 .vscode/
