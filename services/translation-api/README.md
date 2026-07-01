@@ -36,8 +36,6 @@ curl -X POST localhost:8000/translate \
 REGISTRY=registry.<your-zone> ./build-and-push.sh
 ```
 
-Multi-stage Dockerfile → distroless image, ~10 MB, no shell.
-
 ## Deploy
 
 Edit the host in `k8s/ingress.yaml` and the image in `k8s/deployment.yaml`
