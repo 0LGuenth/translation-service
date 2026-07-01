@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -35,20 +38,33 @@ type backend interface {
 	Translate(ctx context.Context, in translateReq) (translateResp, error)
 }
 
-// echoBackend to check if the deployment is working; TODO remove if translation-llm is available
-type echoBackend struct{}
-
-func (echoBackend) Translate(_ context.Context, in translateReq) (translateResp, error) {
-	return translateResp{
-		Translated: in.Text, // echo, not a translation
-		Model:      "echo",
-	}, nil
-}
-
-// httpBackend POSTs to translation-llm; TODO implement if translation-llm is available
+// httpBackend POSTs to translation-llm
 type httpBackend struct {
 	url    string
 	client *http.Client
+}
+
+func (b *httpBackend) Translate(ctx context.Context, in translateReq) (translateResp, error) {
+	body, _ := json.Marshal(in)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.url+"/translate", bytes.NewReader(body))
+	if err != nil {
+		return translateResp{}, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := b.client.Do(req)
+	if err != nil {
+		return translateResp{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		msg, _ := io.ReadAll(resp.Body)
+		return translateResp{}, fmt.Errorf("llm %d: %s", resp.StatusCode, msg)
+	}
+	var out translateResp
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return translateResp{}, err
+	}
+	return out, nil
 }
 
 // validate checks non-empty text, length cap, and ISO 639 lang codes
@@ -114,19 +130,26 @@ func handleTranslate(b backend, log *slog.Logger, maxTextLen int) http.HandlerFu
 
 func main() {
 	cfg := struct {
-		port            string
-		maxTextLen      int
-		llmTimeout      time.Duration
-		shutdownTimeout time.Duration
+		port              string
+		maxTextLen        int
+		llmTimeout        time.Duration
+		shutdownTimeout   time.Duration
+		translationLlmUrl string
 	}{
-		port:            envOr("PORT", "8000"),
-		maxTextLen:      envInt("MAX_TEXT_LENGTH", 5000),
-		llmTimeout:      time.Duration(envInt("LLM_TIMEOUT_SECONDS", 30)) * time.Second,
-		shutdownTimeout: time.Duration(envInt("SHUTDOWN_TIMEOUT_SECONDS", 20)) * time.Second,
+		port:              envOr("PORT", "8000"),
+		maxTextLen:        envInt("MAX_TEXT_LENGTH", 5000),
+		llmTimeout:        time.Duration(envInt("LLM_TIMEOUT_SECONDS", 30)) * time.Second,
+		shutdownTimeout:   time.Duration(envInt("SHUTDOWN_TIMEOUT_SECONDS", 20)) * time.Second,
+		translationLlmUrl: os.Getenv("TRANSLATION_LLM_URL"),
 	}
 
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	backend := echoBackend{}
+	url := cfg.translationLlmUrl
+	if url == "" {
+		log.Error("TRANSLATION_LLM_URL not found; exiting")
+		os.Exit(1)
+	}
+	backend := &httpBackend{url: url, client: &http.Client{Timeout: cfg.llmTimeout}}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
