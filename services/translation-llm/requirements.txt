@@ -1,0 +1,9 @@
+# CPU-only torch
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.4.1+cpu
+transformers==4.44.2
+sentencepiece==0.2.0
+sacremoses==0.1.1
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2

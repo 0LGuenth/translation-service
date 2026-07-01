@@ -1,7 +1,6 @@
 # translation-api
 
-Go HTTP gateway. Validates translation requests and forwards them to a
-translation backend.
+Go HTTP gateway. Validates translation requests and forwards them to the `translation-llm` backend.
 
 ## Endpoints
 
@@ -16,18 +15,21 @@ capped at `MAX_TEXT_LENGTH`.
 
 ## Config (env vars)
 
-| Var                        | Default   | Notes                                                                                             |
-|----------------------------|-----------|---------------------------------------------------------------------------------------------------|
-| `PORT`                     | `8000`    |                                                                                                   |
-| `TRANSLATION_LLM_URL`      | *(empty)* | Backend URL. Currently unused; test backend is wired in `main.go` until translation-llm is added. |
-| `MAX_TEXT_LENGTH`          | `5000`    | Max chars per request.                                                                            |
-| `LLM_TIMEOUT_SECONDS`      | `30`      | Per-request timeout to the backend.                                                               |
-| `SHUTDOWN_TIMEOUT_SECONDS` | `20`      | Drain window on SIGTERM. Keep < pod `terminationGracePeriodSeconds` (default 30s).                |
+| Var                        | Default                              | Notes                                                                              |
+|----------------------------|--------------------------------------|------------------------------------------------------------------------------------|
+| `PORT`                     | `8000`                               |                                                                                    |
+| `TRANSLATION_LLM_URL`      | *(required, service exits if empty)* | Backend base URL. In-cluster: `http://translation-llm:8000`.                       |
+| `MAX_TEXT_LENGTH`          | `5000`                               | Max chars per request.                                                             |
+| `LLM_TIMEOUT_SECONDS`      | `30`                                 | Per-request timeout to the backend.                                                |
+| `SHUTDOWN_TIMEOUT_SECONDS` | `20`                                 | Drain window on SIGTERM. Keep < pod `terminationGracePeriodSeconds` (default 30s). |
 
-## Run locally for tests
+## Run locally
+
+Requires a reachable `translation-llm`: easiest is `kubectl port-forward
+svc/translation-llm 8001:8000` in another shell.
 
 ```sh
-go run .
+TRANSLATION_LLM_URL=http://localhost:8001 go run .
 curl -X POST localhost:8000/translate \
   -H content-type:application/json \
   -d '{"text":"hallo","src_lang":"de","tgt_lang":"en"}'
@@ -45,7 +47,7 @@ Edit the host in `k8s/ingress.yaml` and the image in `k8s/deployment.yaml`
 to match your zone/registry, then:
 
 ```sh
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/service.yaml -f k8s/deployment.yaml -f k8s/ingress.yaml
 ```
+
+The deployment sets `TRANSLATION_LLM_URL=http://translation-llm:8000` so it resolves the sibling service in-cluster.

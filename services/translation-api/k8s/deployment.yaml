@@ -32,9 +32,9 @@ spec:
           ports:
             - containerPort: 8000
           env:
-            # In-cluster URL of the translation backend; TODO change when translation-llm is available
+            # In-cluster URL of the translation backend
             - name: TRANSLATION_LLM_URL
-              value: ""
+              value: "http://translation-llm:8000"
             - name: MAX_TEXT_LENGTH
               value: "5000"
             - name: LLM_TIMEOUT_SECONDS
