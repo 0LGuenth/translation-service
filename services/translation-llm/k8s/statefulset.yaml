@@ -1,0 +1,71 @@
+# Python translation-llm
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: translation-llm
+  labels:
+    app: translation-llm
+spec:
+  serviceName: translation-llm
+  replicas: 1
+  selector:
+    matchLabels:
+      app: translation-llm
+  template:
+    metadata:
+      labels:
+        app: translation-llm
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: translation-llm
+          image: registry.sXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/translation-llm:latest
+          ports:
+            - containerPort: 8000
+          env:
+            # Preload at startup
+            - name: PRELOAD_PAIRS
+              value: "de-en,en-de"
+          resources:
+            requests:
+              # OPUS-MT inference on CPU
+              cpu: "500m"
+              # Model + tokenizer in RAM is couple hundred MB per loaded pair.
+              memory: "1500Mi"
+            limits:
+              cpu: "2000m"
+              memory: "3Gi"
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /cache/huggingface
+          # First model download can take ~30s on slow links.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 60   # ~5 min budget for cold cache + first model
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 2
+  volumeClaimTemplates:
+    - metadata:
+        name: hf-cache
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
