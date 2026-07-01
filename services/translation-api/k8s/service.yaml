@@ -1,0 +1,14 @@
+# In-cluster DNS name for the gateway pods: `translation-api.<ns>.svc`
+apiVersion: v1
+kind: Service
+metadata:
+  name: translation-api
+spec:
+  # ClusterIP -> external Traffic enters via Ingress
+  type: ClusterIP
+  # Must match the pod labels in deployment.yaml
+  selector:
+    app: translation-api
+  ports:
+    - port: 8000
+      targetPort: 8000

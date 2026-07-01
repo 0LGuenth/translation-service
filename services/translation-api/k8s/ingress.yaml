@@ -1,0 +1,22 @@
+# Public HTTPS entrypoint.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: translation-api
+spec:
+  # Traefik serves the cluster wildcard cert.
+  tls:
+    - hosts:
+        - translation-api.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
+  rules:
+    - host: translation-api.sXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
+      http:
+        paths:
+          # Catch-all; the gateway routes /translate, /health, /ready
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: translation-api
+                port:
+                  number: 8000
