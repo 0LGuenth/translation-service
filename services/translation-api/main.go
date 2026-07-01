@@ -51,8 +51,9 @@ type httpBackend struct {
 	client *http.Client
 }
 
-// validate checks non-empty text, length cap, 639-1 lang codes.
-func validate(in translateReq, maxTextLen int) error {
+// validate checks non-empty text, length cap, and ISO 639 lang codes
+// (639-1/-3/-5). Normalizes codes in place (e.g. "deu" -> "de")
+func validate(in *translateReq, maxTextLen int) error {
 	switch {
 	case in.Text == "":
 		return errors.New("text is required")
@@ -60,12 +61,12 @@ func validate(in translateReq, maxTextLen int) error {
 		return errors.New("text too long (max 5000 chars)")
 	}
 
-	if _, err := language.ParseBase(in.SrcLang); len(in.SrcLang) != 2 || err != nil {
-		return errors.New("src_lang must be a 2-letter ISO 639-1 code")
+	src, err1 := language.ParseBase(in.SrcLang)
+	tgt, err2 := language.ParseBase(in.TgtLang)
+	if err1 != nil || err2 != nil {
+		return errors.New("src_lang/tgt_lang must be a valid ISO 639 code")
 	}
-	if _, err := language.ParseBase(in.TgtLang); len(in.TgtLang) != 2 || err != nil {
-		return errors.New("tgt_lang must be a 2-letter ISO 639-1 code")
-	}
+	in.SrcLang, in.TgtLang = src.String(), tgt.String()
 	return nil
 }
 
@@ -94,7 +95,7 @@ func handleTranslate(b backend, log *slog.Logger, maxTextLen int) http.HandlerFu
 			writeErr(w, http.StatusBadRequest, "invalid JSON")
 			return
 		}
-		if err := validate(in, maxTextLen); err != nil {
+		if err := validate(&in, maxTextLen); err != nil {
 			writeErr(w, http.StatusBadRequest, err.Error())
 			return
 		}
