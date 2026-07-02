@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import threading
 import time
 from contextlib import asynccontextmanager
@@ -88,10 +89,16 @@ def ready():
         raise HTTPException(503, "not ready")
     return {"status": "ready"}
 
+# Split sentence; opus-mt sometimes has problems with multi-sentence translation
+_SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
 
 @app.post("/translate", response_model=TranslateResp)
 def translate(req: TranslateReq):
     # Handle translation requests
     pipe = _get_pipe(req.src_lang, req.tgt_lang)
-    out = pipe(req.text)[0]["translation_text"]
-    return TranslateResp(translated=out, model=_model_name(req.src_lang, req.tgt_lang))
+    log.info(req.text)
+    sentences = [s for s in _SENT_SPLIT.split(req.text.strip()) if s]
+    outs = pipe(sentences) if sentences else []
+    translated = " ".join(o["translation_text"] for o in outs)
+    return TranslateResp(translated=translated, model=_model_name(req.src_lang, req.tgt_lang))
