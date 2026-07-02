@@ -17,7 +17,7 @@ variable "app_cred_secret" {
 
 variable "image_id" {
   description = "OpenStack image ID"
-  default     = "7c6e4b52-4d1f-4da9-b98e-23b17e6570a5"
+  default     = "6e845a06-9ed9-48fc-960a-d01a01754b4e"
 }
 
 variable "flavor_name" {
