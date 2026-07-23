@@ -1,6 +1,6 @@
 variable "auth_url" {
   description = "OpenStack Identity API endpoint"
-  default     = "https://stack.dhbw.cloud:5000"
+  default     = "https://newstack.dhbw.cloud:5000"
 }
 
 variable "app_cred_id" {
@@ -17,7 +17,7 @@ variable "app_cred_secret" {
 
 variable "image_id" {
   description = "OpenStack image ID"
-  default     = "6e845a06-9ed9-48fc-960a-d01a01754b4e"
+  default     = "7842eb53-0ac7-4677-9160-2466371b4302"
 }
 
 variable "flavor_name" {
@@ -32,7 +32,7 @@ variable "key_pair" {
 
 variable "network_name" {
   description = "OpenStack network the VMs attach to."
-  default     = "DHBW"
+  default     = "DHBWV6"
 }
 
 variable "vm_prefix" {

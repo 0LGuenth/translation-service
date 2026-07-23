@@ -22,7 +22,7 @@ spec:
         fsGroup: 10001
       containers:
         - name: translation-llm
-          image: registry.sXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/translation-llm:latest
+          image: registry.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/translation-llm:latest
           ports:
             - containerPort: 8000
           env:
