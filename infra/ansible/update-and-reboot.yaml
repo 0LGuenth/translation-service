@@ -1,0 +1,21 @@
+---
+- name: Update Ubuntu packages and reboot nodes
+  hosts: all
+  become: true
+  gather_facts: true
+  serial: 1
+
+  tasks:
+    - name: update and upgrade packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        autoremove: true
+        autoclean: true
+  
+
+    - name: Reboot node after package updates
+      ansible.builtin.reboot:
+        connect_timeout: 10
+        reboot_timeout: 600
+        post_reboot_delay: 20
