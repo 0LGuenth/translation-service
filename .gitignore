@@ -12,6 +12,7 @@
 **/kubeconfig-generated.yaml
 **/kubeconfig*.yaml
 **/dns-credentials.yaml
+**/ansible.cfg
 
 # OpenStack Credentials
 clouds.yaml
@@ -20,3 +21,6 @@ clouds.yaml
 .idea/
 .vscode/
 .DS_Store
+
+# Notes
+*max.md
