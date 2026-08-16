@@ -1,50 +1,98 @@
+// Translation API — Go HTTP gateway.
+//
+// Mirrors PDF gridflex-api (slides 13–28): /translate plus /health and /ready
+// for k8s probes. Translation is delegated to TRANSLATION_LLM_URL. Every
+// request is published as a translationEvent to Kafka (best-effort, async) so
+// the streaming pipeline can build analytics off it.
 package main
 
 import (
 	"bytes"
+	"cmp"
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
+	"strings"
 	"syscall"
 	"time"
+	"unicode/utf8"
 
-	"golang.org/x/text/language"
+	"github.com/segmentio/kafka-go"
 )
 
-// translateReq request is the request schema for a translation
 type translateReq struct {
+	Text    string `json:"text"`
+	SrcLang string `json:"src_lang"`
+	TgtLang string `json:"tgt_lang"`
+	Src     string `json:"src,omitempty"`
+}
+
+type llmTranslateReq struct {
 	Text    string `json:"text"`
 	SrcLang string `json:"src_lang"`
 	TgtLang string `json:"tgt_lang"`
 }
 
-// translateResp is the response schema sent after translation
 type translateResp struct {
-	Translated         string `json:"translated"`
-	Model              string `json:"model"`
+	Translated string `json:"translated"`
+	Model      string `json:"model"`
+	LatencyMs  int64  `json:"latency_ms"`
+	ReqID      string `json:"req_id,omitempty"`
+}
+
+type errorResp struct {
+	Error string `json:"error"`
+	ReqID string `json:"req_id,omitempty"`
+}
+
+type translationEvent struct {
+	ReqID              string `json:"req_id"`
+	Src                string `json:"src"`
+	UserIDHashed       string `json:"user_id_hashed"`
+	SrcLang            string `json:"src_lang"`
+	TgtLang            string `json:"tgt_lang"`
+	CharCount          int    `json:"char_count"`
+	Model              string `json:"model,omitempty"`
+	Status             string `json:"status"`
 	LatencyMsTotal     int64  `json:"latency_ms_total"`
 	LatencyMsTranslate int64  `json:"latency_ms_translate"`
+	EventTs            string `json:"event_ts"`
+	ErrorType          string `json:"error_type,omitempty"`
 }
 
-// backend used to translate a request
+// backend translates one request
 type backend interface {
-	Translate(ctx context.Context, in translateReq) (translateResp, error)
+	Translate(ctx context.Context, in llmTranslateReq) (translateResp, error)
 }
 
-// httpBackend POSTs to translation-llm
+// httpBackend POSTs to translation-llm. Expects the same {translated,model}
+// shape back
 type httpBackend struct {
 	url    string
 	client *http.Client
 }
 
-func (b *httpBackend) Translate(ctx context.Context, in translateReq) (translateResp, error) {
+type backendError struct {
+	statusCode int
+	errorType  string
+	message    string
+}
+
+func (e *backendError) Error() string {
+	return e.message
+}
+
+func (b *httpBackend) Translate(ctx context.Context, in llmTranslateReq) (translateResp, error) {
 	body, _ := json.Marshal(in)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.url+"/translate", bytes.NewReader(body))
 	if err != nil {
@@ -53,12 +101,12 @@ func (b *httpBackend) Translate(ctx context.Context, in translateReq) (translate
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := b.client.Do(req)
 	if err != nil {
-		return translateResp{}, err
+		return translateResp{}, classifyBackendRequestError(err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		msg, _ := io.ReadAll(resp.Body)
-		return translateResp{}, fmt.Errorf("llm %d: %s", resp.StatusCode, msg)
+		return translateResp{}, classifyBackendStatus(resp.StatusCode, msg)
 	}
 	var out translateResp
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
@@ -67,104 +115,432 @@ func (b *httpBackend) Translate(ctx context.Context, in translateReq) (translate
 	return out, nil
 }
 
-// validate checks non-empty text, length cap, and ISO 639 lang codes
-// (639-1/-3/-5). Normalizes codes in place (e.g. "deu" -> "de")
-func validate(in *translateReq, maxTextLen int) error {
+func classifyBackendRequestError(err error) error {
+	var netErr net.Error
+	if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &netErr) && netErr.Timeout()) {
+		return &backendError{
+			statusCode: http.StatusGatewayTimeout,
+			errorType:  "llm_timeout",
+			message:    "translation backend timed out",
+		}
+	}
+	return &backendError{
+		statusCode: http.StatusBadGateway,
+		errorType:  "llm_unavailable",
+		message:    "translation backend unavailable",
+	}
+}
+
+func classifyBackendStatus(status int, body []byte) error {
+	message := strings.TrimSpace(string(body))
+	if message == "" {
+		message = http.StatusText(status)
+	}
+	errorType := "llm_backend_error"
+	statusCode := http.StatusBadGateway
+	if status >= 400 && status < 500 {
+		statusCode = status
+		errorType = "unsupported_language_pair"
+	}
+	return &backendError{
+		statusCode: statusCode,
+		errorType:  errorType,
+		message:    fmt.Sprintf("translation backend rejected request: %s", message),
+	}
+}
+
+type supportedPair struct {
+	src string
+	tgt string
+}
+
+type supportedPairs map[string]supportedPair
+
+var languageAliases = map[string]string{
+	"deu": "de",
+	"ger": "de",
+	"eng": "en",
+	"fra": "fr",
+	"fre": "fr",
+	"spa": "es",
+	"ita": "it",
+}
+
+func parseSupportedPairs(raw string) supportedPairs {
+	pairs := supportedPairs{}
+	for _, spec := range strings.Split(raw, ",") {
+		spec = strings.ToLower(strings.TrimSpace(spec))
+		if spec == "" {
+			continue
+		}
+		src, tgt, ok := strings.Cut(spec, "-")
+		if !ok || src == "" || tgt == "" {
+			continue
+		}
+		pairs[pairKey(src, tgt)] = supportedPair{src: src, tgt: tgt}
+	}
+	return pairs
+}
+
+func normalizeLangCode(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	if alias, ok := languageAliases[value]; ok {
+		return alias
+	}
+	return value
+}
+
+func (p supportedPairs) allows(src, tgt string) bool {
+	if len(p) == 0 {
+		return true
+	}
+	_, ok := p[pairKey(src, tgt)]
+	return ok
+}
+
+func pairKey(src, tgt string) string {
+	return strings.ToLower(strings.TrimSpace(src)) + "-" + strings.ToLower(strings.TrimSpace(tgt))
+}
+
+// validate checks the bounds the PDF + ARCHITECTURE.md call out: non-empty
+// text, sane length cap, BCP-47-ish lang codes.
+func validate(in translateReq, pairs supportedPairs) error {
 	switch {
 	case in.Text == "":
 		return errors.New("text is required")
-	case len(in.Text) > maxTextLen:
-		return errors.New("text too long (max 5000 chars)")
+	case len(in.Text) > 5000:
+		return errors.New("text too long (max 5000)")
+	case len(in.SrcLang) < 2 || len(in.SrcLang) > 5:
+		return errors.New("src_lang must be 2–5 chars")
+	case len(in.TgtLang) < 2 || len(in.TgtLang) > 5:
+		return errors.New("tgt_lang must be 2–5 chars")
+	case strings.TrimSpace(in.Src) != "" && len(in.Src) > 64:
+		return errors.New("src must be at most 64 chars")
+	case !pairs.allows(in.SrcLang, in.TgtLang):
+		return fmt.Errorf("language pair %s->%s not supported", in.SrcLang, in.TgtLang)
 	}
-
-	src, err1 := language.ParseBase(in.SrcLang)
-	tgt, err2 := language.ParseBase(in.TgtLang)
-	if err1 != nil || err2 != nil {
-		return errors.New("src_lang/tgt_lang must be a valid ISO 639 code")
-	}
-	in.SrcLang, in.TgtLang = src.String(), tgt.String()
 	return nil
 }
 
-// writeJSON serialises v as JSON and writes status to the response
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-// writeErr writes a JSON error response with a single "error" field.
-func writeErr(w http.ResponseWriter, status int, msg string) {
-	writeJSON(w, status, map[string]string{"error": msg})
+func withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-Source, X-Request-ID, X-User-ID")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
-// handleTranslate decodes the request, validates it, delegates to the backend, and writes the response
-func handleTranslate(b backend, log *slog.Logger, maxTextLen int) http.HandlerFunc {
+type eventPublisher interface {
+	Publish(ctx context.Context, event translationEvent) error
+	Close() error
+}
+
+type noopPublisher struct{}
+
+func (noopPublisher) Publish(context.Context, translationEvent) error { return nil }
+func (noopPublisher) Close() error                                    { return nil }
+
+type kafkaPublisher struct {
+	eventsWriter *kafka.Writer
+	errorsWriter *kafka.Writer
+	timeout      time.Duration
+}
+
+func newEventPublisher(log *slog.Logger) (eventPublisher, error) {
+	if !envBool("KAFKA_ENABLED", false) {
+		log.Info("kafka disabled")
+		return noopPublisher{}, nil
+	}
+	brokers := splitCSV(os.Getenv("KAFKA_BROKERS"))
+	if len(brokers) == 0 {
+		return nil, errors.New("KAFKA_ENABLED=true but KAFKA_BROKERS is empty")
+	}
+	eventsTopic := cmp.Or(os.Getenv("KAFKA_TRANSLATION_EVENTS_TOPIC"), "translation-events")
+	errorsTopic := cmp.Or(os.Getenv("KAFKA_TRANSLATION_ERRORS_TOPIC"), "translation-errors")
+	timeout := envDuration("KAFKA_WRITE_TIMEOUT", 2*time.Second)
+	log.Info("kafka enabled", "brokers", strings.Join(brokers, ","), "events_topic", eventsTopic, "errors_topic", errorsTopic)
+	return &kafkaPublisher{
+		eventsWriter: newKafkaWriter(brokers, eventsTopic, timeout),
+		errorsWriter: newKafkaWriter(brokers, errorsTopic, timeout),
+		timeout:      timeout,
+	}, nil
+}
+
+func newKafkaWriter(brokers []string, topic string, timeout time.Duration) *kafka.Writer {
+	return &kafka.Writer{
+		Addr:         kafka.TCP(brokers...),
+		Topic:        topic,
+		Balancer:     &kafka.Hash{},
+		BatchTimeout: 10 * time.Millisecond,
+		WriteTimeout: timeout,
+		ReadTimeout:  timeout,
+		RequiredAcks: kafka.RequireOne,
+	}
+}
+
+func (p *kafkaPublisher) Publish(ctx context.Context, event translationEvent) error {
+	payload, err := json.Marshal(event)
+	if err != nil {
+		return err
+	}
+	writer := p.eventsWriter
+	if event.Status != "success" {
+		writer = p.errorsWriter
+	}
+	ctx, cancel := context.WithTimeout(ctx, p.timeout)
+	defer cancel()
+	return writer.WriteMessages(ctx, kafka.Message{
+		Key:   []byte(event.ReqID),
+		Value: payload,
+		Time:  time.Now().UTC(),
+	})
+}
+
+func (p *kafkaPublisher) Close() error {
+	errEvents := p.eventsWriter.Close()
+	errErrors := p.errorsWriter.Close()
+	return errors.Join(errEvents, errErrors)
+}
+
+func envBool(name string, fallback bool) bool {
+	raw := strings.ToLower(strings.TrimSpace(os.Getenv(name)))
+	switch raw {
+	case "1", "true", "yes", "on":
+		return true
+	case "0", "false", "no", "off":
+		return false
+	default:
+		return fallback
+	}
+}
+
+func envDuration(name string, fallback time.Duration) time.Duration {
+	raw := strings.TrimSpace(os.Getenv(name))
+	if raw == "" {
+		return fallback
+	}
+	d, err := time.ParseDuration(raw)
+	if err != nil {
+		return fallback
+	}
+	return d
+}
+
+func splitCSV(raw string) []string {
+	var out []string
+	for _, item := range strings.Split(raw, ",") {
+		item = strings.TrimSpace(item)
+		if item != "" {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+type appConfig struct {
+	defaultSource  string
+	supportedPairs supportedPairs
+	demoUserID     string
+}
+
+func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		startTotal := time.Now()
+		reqID := requestID(r)
+		start := time.Now()
+		source := sourceFromRequest(r, "", cfg.defaultSource)
+		userHash := userHashFromRequest(r, cfg.demoUserID)
+
 		if r.Method != http.MethodPost {
-			writeErr(w, http.StatusMethodNotAllowed, "POST only")
+			writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "POST only", ReqID: reqID})
 			return
 		}
 		var in translateReq
 		if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
-			writeErr(w, http.StatusBadRequest, "invalid JSON")
+			event := newEvent(reqID, source, userHash, in, "error", "", start, 0, "invalid_json")
+			publishAsync(pub, log, event)
+			writeJSON(w, http.StatusBadRequest, errorResp{Error: "invalid JSON", ReqID: reqID})
 			return
 		}
-		if err := validate(&in, maxTextLen); err != nil {
-			writeErr(w, http.StatusBadRequest, err.Error())
+		in.SrcLang = normalizeLangCode(in.SrcLang)
+		in.TgtLang = normalizeLangCode(in.TgtLang)
+		source = sourceFromRequest(r, in.Src, cfg.defaultSource)
+		in.Src = source
+		if err := validate(in, cfg.supportedPairs); err != nil {
+			event := newEvent(reqID, source, userHash, in, "error", "", start, 0, "validation_error")
+			publishAsync(pub, log, event)
+			writeJSON(w, http.StatusBadRequest, errorResp{Error: err.Error(), ReqID: reqID})
 			return
 		}
-		startTranslate := time.Now()
-		out, err := b.Translate(r.Context(), in)
+		translateStart := time.Now()
+		out, err := b.Translate(r.Context(), llmTranslateReq{
+			Text:    in.Text,
+			SrcLang: in.SrcLang,
+			TgtLang: in.TgtLang,
+		})
+		translateLatency := time.Since(translateStart).Milliseconds()
 		if err != nil {
-			log.Error("translate failed", "err", err, "src", in.SrcLang, "tgt", in.TgtLang)
-			writeErr(w, http.StatusBadGateway, err.Error())
+			statusCode, errorType := statusAndType(err)
+			event := newEvent(reqID, source, userHash, in, "error", "", start, translateLatency, errorType)
+			publishAsync(pub, log, event)
+			log.Error("translate failed",
+				"req_id", reqID,
+				"src", source,
+				"src_lang", in.SrcLang,
+				"tgt_lang", in.TgtLang,
+				"error_type", errorType,
+				"err", err,
+			)
+			writeJSON(w, statusCode, errorResp{Error: err.Error(), ReqID: reqID})
 			return
 		}
-		out.LatencyMsTotal = time.Since(startTotal).Milliseconds()
-		out.LatencyMsTranslate = time.Since(startTranslate).Milliseconds()
+		out.LatencyMs = time.Since(start).Milliseconds()
+		out.ReqID = reqID
+		event := newEvent(reqID, source, userHash, in, "success", out.Model, start, translateLatency, "")
+		publishAsync(pub, log, event)
+		log.Info("translate succeeded",
+			"req_id", reqID,
+			"src", source,
+			"src_lang", in.SrcLang,
+			"tgt_lang", in.TgtLang,
+			"model", out.Model,
+			"latency_ms_total", out.LatencyMs,
+			"latency_ms_translate", translateLatency,
+		)
 		writeJSON(w, http.StatusOK, out)
 	}
 }
 
-func main() {
-	cfg := struct {
-		port              string
-		maxTextLen        int
-		llmTimeout        time.Duration
-		shutdownTimeout   time.Duration
-		translationLlmUrl string
-	}{
-		port:              envOr("PORT", "8000"),
-		maxTextLen:        envInt("MAX_TEXT_LENGTH", 5000),
-		llmTimeout:        time.Duration(envInt("LLM_TIMEOUT_SECONDS", 30)) * time.Second,
-		shutdownTimeout:   time.Duration(envInt("SHUTDOWN_TIMEOUT_SECONDS", 20)) * time.Second,
-		translationLlmUrl: os.Getenv("TRANSLATION_LLM_URL"),
+func statusAndType(err error) (int, string) {
+	var be *backendError
+	if errors.As(err, &be) {
+		return be.statusCode, be.errorType
 	}
+	return http.StatusBadGateway, "llm_backend_error"
+}
 
+func newEvent(reqID, source, userHash string, in translateReq, status, model string, start time.Time, translateLatency int64, errorType string) translationEvent {
+	return translationEvent{
+		ReqID:              reqID,
+		Src:                source,
+		UserIDHashed:       userHash,
+		SrcLang:            in.SrcLang,
+		TgtLang:            in.TgtLang,
+		CharCount:          utf8.RuneCountInString(in.Text),
+		Model:              model,
+		Status:             status,
+		LatencyMsTotal:     time.Since(start).Milliseconds(),
+		LatencyMsTranslate: translateLatency,
+		EventTs:            time.Now().UTC().Format(time.RFC3339Nano),
+		ErrorType:          errorType,
+	}
+}
+
+func publishAsync(pub eventPublisher, log *slog.Logger, event translationEvent) {
+	go func() {
+		if err := pub.Publish(context.Background(), event); err != nil {
+			log.Warn("kafka publish failed", "req_id", event.ReqID, "status", event.Status, "err", err)
+		}
+	}()
+}
+
+func requestID(r *http.Request) string {
+	if fromHeader := cleanToken(r.Header.Get("X-Request-ID"), 128); fromHeader != "" {
+		return fromHeader
+	}
+	var b [16]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b[:])
+}
+
+func sourceFromRequest(r *http.Request, bodySource, fallback string) string {
+	if source := cleanToken(bodySource, 64); source != "" {
+		return source
+	}
+	if source := cleanToken(r.Header.Get("X-Source"), 64); source != "" {
+		return source
+	}
+	if source := cleanToken(r.Header.Get("X-Client-Source"), 64); source != "" {
+		return source
+	}
+	return fallback
+}
+
+func userHashFromRequest(r *http.Request, fallback string) string {
+	userID := strings.TrimSpace(r.Header.Get("X-User-ID"))
+	if userID == "" {
+		userID = fallback
+	}
+	sum := sha256.Sum256([]byte(userID))
+	return hex.EncodeToString(sum[:])
+}
+
+func cleanToken(value string, maxLen int) string {
+	value = strings.TrimSpace(value)
+	if value == "" || len(value) > maxLen {
+		return ""
+	}
+	for _, r := range value {
+		if r < 33 || r == 127 {
+			return ""
+		}
+	}
+	return value
+}
+
+func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	url := cfg.translationLlmUrl
+	addr := ":" + cmp.Or(os.Getenv("PORT"), "8000")
+	url := os.Getenv("TRANSLATION_LLM_URL")
 	if url == "" {
 		log.Error("TRANSLATION_LLM_URL not found; exiting")
 		os.Exit(1)
 	}
-	backend := &httpBackend{url: url, client: &http.Client{Timeout: cfg.llmTimeout}}
+	backendTimeout := envDuration("TRANSLATION_BACKEND_TIMEOUT", 120*time.Second)
+	backend := &httpBackend{url: url, client: &http.Client{Timeout: backendTimeout}}
+	publisher, err := newEventPublisher(log)
+	if err != nil {
+		log.Error("kafka config invalid", "err", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := publisher.Close(); err != nil {
+			log.Warn("kafka close failed", "err", err)
+		}
+	}()
+	cfg := appConfig{
+		defaultSource:  cmp.Or(os.Getenv("DEFAULT_SRC"), "local"),
+		supportedPairs: parseSupportedPairs(os.Getenv("SUPPORTED_PAIRS")),
+		demoUserID:     cmp.Or(os.Getenv("DEMO_USER_ID"), "demo-user"),
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
 	mux.HandleFunc("/ready", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ready"}) })
-	mux.HandleFunc("/translate", handleTranslate(backend, log, cfg.maxTextLen))
+	mux.HandleFunc("/translate", handleTranslate(backend, log, publisher, cfg))
 
 	srv := &http.Server{
-		Addr:              ":" + cfg.port,
-		Handler:           mux,
+		Addr:              addr,
+		Handler:           withCORS(mux),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	// Graceful shutdown; drain in-flight requests.
+	// Graceful shutdown — k8s sends SIGTERM, we drain in-flight requests.
 	go func() {
-		log.Info("listening", "addr", srv.Addr)
+		log.Info("listening", "addr", addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("server", "err", err)
 			os.Exit(1)
@@ -173,23 +549,7 @@ func main() {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	<-sig
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.shutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	_ = srv.Shutdown(ctx)
-}
-
-func envOr(k, def string) string {
-	if v := os.Getenv(k); v != "" {
-		return v
-	}
-	return def
-}
-
-func envInt(k string, def int) int {
-	if v := os.Getenv(k); v != "" {
-		if n, err := strconv.Atoi(v); err == nil {
-			return n
-		}
-	}
-	return def
 }

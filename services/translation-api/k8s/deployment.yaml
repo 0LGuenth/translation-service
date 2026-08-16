@@ -35,13 +35,27 @@ spec:
             # In-cluster URL of the translation backend
             - name: TRANSLATION_LLM_URL
               value: "http://translation-llm:8000"
-            - name: MAX_TEXT_LENGTH
-              value: "5000"
-            - name: LLM_TIMEOUT_SECONDS
-              value: "30"
-            # Should stay below terminationGracePeriodSeconds (default 30s) so in-flight requests are not killed
-            - name: SHUTDOWN_TIMEOUT_SECONDS
-              value: "20"
+            # First request for a non-preloaded model may download weights from HF
+            - name: TRANSLATION_BACKEND_TIMEOUT
+              value: "120s"
+            - name: DEFAULT_SRC
+              value: "local"
+            - name: DEMO_USER_ID
+              value: "demo-user"
+            # Empty allows all pairs; comma-separated src-tgt enables allowlist mode
+            - name: SUPPORTED_PAIRS
+              value: ""
+            # Publish translation events to Kafka for the streaming pipeline
+            - name: KAFKA_ENABLED
+              value: "true"
+            - name: KAFKA_BROKERS
+              value: "translation-kafka-kafka-bootstrap:9092"
+            - name: KAFKA_TRANSLATION_EVENTS_TOPIC
+              value: "translation-events"
+            - name: KAFKA_TRANSLATION_ERRORS_TOPIC
+              value: "translation-errors"
+            - name: KAFKA_WRITE_TIMEOUT
+              value: "2s"
           resources:
             requests:
               cpu: "100m"
