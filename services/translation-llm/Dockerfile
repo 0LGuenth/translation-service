@@ -9,14 +9,17 @@ RUN pip install --prefix=/install -r requirements.txt
 FROM python:3.12-slim
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
-    HF_HOME=/cache/huggingface
+    HF_HOME=/cache/huggingface \
+    NLTK_DATA=/usr/share/nltk_data
 
 COPY --from=build /install /usr/local
+COPY main.py .
+
+# Bake punkt tokenizer data into the image -> no internet at startup required
+RUN python -m nltk.downloader -d /usr/share/nltk_data punkt punkt_tab
 
 # Non-root for least privilege — k8s securityContext will pin this anyway.
 RUN useradd -u 10001 -m app && mkdir -p /cache/huggingface && chown -R app:app /cache
-
-COPY main.py .
 USER app
 
 EXPOSE 8000
