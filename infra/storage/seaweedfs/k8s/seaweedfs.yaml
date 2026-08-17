@@ -1,0 +1,418 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: seaweedfs
+  labels:
+    app.kubernetes.io/part-of: translate-platform
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: seaweedfs-s3-credentials
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/part-of: translate-platform
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: "translation-spark"
+  AWS_SECRET_ACCESS_KEY: "translation-spark-secret-change-me"
+  AWS_DEFAULT_REGION: "us-east-1"
+  spark-s3a-secret.conf: |
+    spark.hadoop.fs.s3a.access.key translation-spark
+    spark.hadoop.fs.s3a.secret.key translation-spark-secret-change-me
+  config.json: |
+    {
+      "identities": [
+        {
+          "name": "spark",
+          "credentials": [
+            {
+              "accessKey": "translation-spark",
+              "secretKey": "translation-spark-secret-change-me"
+            }
+          ],
+          "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+        }
+      ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seaweedfs-spark-config
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/part-of: translate-platform
+data:
+  S3_ENDPOINT: "http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333"
+  S3_PATH_STYLE_ACCESS: "true"
+  S3_REGION: "us-east-1"
+  DELTA_BRONZE_PATH: "s3a://translation-bronze/"
+  DELTA_SILVER_PATH: "s3a://translation-silver/"
+  DELTA_GOLD_PATH: "s3a://translation-gold/"
+  DELTA_CHECKPOINT_PATH: "s3a://translation-checkpoints/"
+  spark-defaults.conf: |
+    spark.hadoop.fs.s3a.endpoint http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333
+    spark.hadoop.fs.s3a.path.style.access true
+    spark.hadoop.fs.s3a.connection.ssl.enabled false
+    spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.hadoop.fs.s3a.aws.credentials.provider org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+    spark.sql.extensions io.delta.sql.DeltaSparkSessionExtension
+    spark.sql.catalog.spark_catalog org.apache.spark.sql.delta.catalog.DeltaCatalog
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-master
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-master
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: seaweedfs-master
+  ports:
+    - name: http
+      port: 9333
+      targetPort: http
+    - name: grpc
+      port: 19333
+      targetPort: grpc
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-master
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-master
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  serviceName: seaweedfs-master
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: seaweedfs-master
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seaweedfs-master
+        app.kubernetes.io/part-of: translate-platform
+    spec:
+      containers:
+        - name: master
+          image: "chrislusf/seaweedfs:4.41"
+          imagePullPolicy: IfNotPresent
+          command:
+            - weed
+            - master
+            - -mdir=/data
+            - -port=9333
+            - -ip=seaweedfs-master
+            - -ip.bind=0.0.0.0
+            - -volumeSizeLimitMB=1024
+          ports:
+            - name: http
+              containerPort: 9333
+            - name: grpc
+              containerPort: 19333
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-volume
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-volume
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: seaweedfs-volume
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: grpc
+      port: 18080
+      targetPort: grpc
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-volume
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-volume
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  serviceName: seaweedfs-volume
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: seaweedfs-volume
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seaweedfs-volume
+        app.kubernetes.io/part-of: translate-platform
+    spec:
+      containers:
+        - name: volume
+          image: "chrislusf/seaweedfs:4.41"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              exec weed volume \
+                -dir=/data \
+                -max=32 \
+                -master=seaweedfs-master:9333 \
+                -port=8080 \
+                -ip="${POD_NAME}.seaweedfs-volume.${POD_NAMESPACE}.svc.cluster.local" \
+                -ip.bind=0.0.0.0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: grpc
+              containerPort: 18080
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-filer
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-filer
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  selector:
+    app.kubernetes.io/name: seaweedfs-filer
+  ports:
+    - name: filer
+      port: 8888
+      targetPort: filer
+    - name: s3
+      port: 8333
+      targetPort: s3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-filer-headless
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-filer
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: seaweedfs-filer
+  ports:
+    - name: filer
+      port: 8888
+      targetPort: filer
+    - name: s3
+      port: 8333
+      targetPort: s3
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-filer
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-filer
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  serviceName: seaweedfs-filer-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: seaweedfs-filer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seaweedfs-filer
+        app.kubernetes.io/part-of: translate-platform
+    spec:
+      containers:
+        - name: filer
+          image: "chrislusf/seaweedfs:4.41"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              exec weed filer \
+                -master=seaweedfs-master:9333 \
+                -port=8888 \
+                -ip="${POD_NAME}.seaweedfs-filer-headless.${POD_NAMESPACE}.svc.cluster.local" \
+                -ip.bind=0.0.0.0 \
+                -defaultStoreDir=/data \
+                -s3 \
+                -s3.port=8333 \
+                -s3.ip.bind=0.0.0.0 \
+                -s3.config=/etc/seaweedfs/s3/config.json
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: filer
+              containerPort: 8888
+            - name: s3
+              containerPort: 8333
+            - name: grpc
+              containerPort: 18888
+          readinessProbe:
+            tcpSocket:
+              port: s3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: filer
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: s3-config
+              mountPath: /etc/seaweedfs/s3
+              readOnly: true
+      volumes:
+        - name: s3-config
+          secret:
+            secretName: seaweedfs-s3-credentials
+            items:
+              - key: config.json
+                path: config.json
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seaweedfs-bucket-init
+  namespace: seaweedfs
+  labels:
+    app.kubernetes.io/name: seaweedfs-bucket-init
+    app.kubernetes.io/part-of: translate-platform
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seaweedfs-bucket-init
+        app.kubernetes.io/part-of: translate-platform
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: aws-cli
+          image: "amazon/aws-cli:2.15.57"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              for i in $(seq 1 60); do
+                if aws --endpoint-url "${S3_ENDPOINT}" s3 ls >/dev/null 2>&1; then
+                  break
+                fi
+                if [ "$i" = "60" ]; then
+                  echo "SeaweedFS S3 endpoint did not become ready: ${S3_ENDPOINT}" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              for bucket in translation-bronze translation-silver translation-gold translation-checkpoints ; do
+                aws --endpoint-url "${S3_ENDPOINT}" s3api head-bucket --bucket "${bucket}" >/dev/null 2>&1 ||
+                  aws --endpoint-url "${S3_ENDPOINT}" s3api create-bucket --bucket "${bucket}"
+                printf 'initialized %s\n' "${bucket}"
+              done
+          env:
+            - name: S3_ENDPOINT
+              value: "http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333"
+            - name: AWS_EC2_METADATA_DISABLED
+              value: "true"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: seaweedfs-s3-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seaweedfs-s3-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: seaweedfs-s3-credentials
+                  key: AWS_DEFAULT_REGION
