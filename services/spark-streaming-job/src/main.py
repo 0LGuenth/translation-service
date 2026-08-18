@@ -24,6 +24,15 @@ EVENT_SCHEMA = T.StructType(
     ]
 )
 
+LANGUAGE_SCHEMA = T.StructType(
+    [
+        T.StructField("code", T.StringType(), False),
+        T.StructField("name", T.StringType(), False),
+        T.StructField("script", T.StringType(), False),
+        T.StructField("family", T.StringType(), False),
+    ]
+)
+
 
 def env(name: str, default: str) -> str:
     return os.environ.get(name, default)
@@ -59,7 +68,10 @@ def build_spark() -> SparkSession:
 def paths() -> dict[str, str]:
     return {
         "bronze": env("BRONZE_PATH", "s3a://translation-bronze/events"),
+        "silver": env("SILVER_PATH", "s3a://translation-silver/events"),
+        "silver_invalid": env("SILVER_INVALID_PATH", "s3a://translation-silver/invalid-events"),
         "checkpoint_root": env("CHECKPOINT_ROOT", "s3a://translation-checkpoints/spark-streaming-job"),
+        "languages": env("LANGUAGES_PATH", "/opt/translation/spark-streaming-job/src/languages.json"),
     }
 
 
@@ -85,6 +97,15 @@ def parse_kafka_events(raw: DataFrame) -> DataFrame:
         F.current_timestamp().alias("ingest_ts"),
     )
     parsed = bronze.withColumn("event", F.from_json("raw_event", EVENT_SCHEMA))
+    return normalize_event_columns(parsed)
+
+
+def parse_bronze_events(bronze: DataFrame) -> DataFrame:
+    if "raw_event" not in bronze.columns:
+        raise ValueError("Bronze table must contain raw_event")
+    parsed = bronze.withColumn("event", F.from_json("raw_event", EVENT_SCHEMA))
+    if "ingest_ts" not in parsed.columns:
+        parsed = parsed.withColumn("ingest_ts", F.current_timestamp())
     return normalize_event_columns(parsed)
 
 
@@ -118,6 +139,55 @@ def normalize_event_columns(parsed: DataFrame) -> DataFrame:
     )
 
 
+def with_validation(df: DataFrame) -> DataFrame:
+    error_text = F.concat_ws(
+        ",",
+        F.when(F.col("req_id").isNull() | (F.length(F.col("req_id")) == 0), "missing_req_id"),
+        F.when(F.col("event_time").isNull(), "invalid_event_ts"),
+        F.when(F.col("user_id_hashed").isNull() | (F.length(F.col("user_id_hashed")) == 0), "missing_user_id_hashed"),
+        F.when(~F.col("src_lang").rlike("^[a-z]{2,5}$"), "invalid_src_lang"),
+        F.when(~F.col("tgt_lang").rlike("^[a-z]{2,5}$"), "invalid_tgt_lang"),
+        F.when(~F.col("status").isin("success", "error"), "invalid_status"),
+        F.when(F.col("char_count").isNull() | (F.col("char_count") < 0), "invalid_char_count"),
+    )
+    return df.withColumn("validation_errors", error_text)
+
+
+def load_languages(spark: SparkSession, languages_path: str) -> DataFrame:
+    return (
+        spark.read.schema(LANGUAGE_SCHEMA)
+        .json(languages_path)
+        .withColumn("code", F.lower(F.trim("code")))
+    )
+
+
+def silver_events(parsed: DataFrame, languages: DataFrame) -> tuple[DataFrame, DataFrame]:
+    checked = with_validation(parsed)
+    invalid = checked.filter(F.col("validation_errors") != "")
+
+    valid = (
+        checked.filter(F.col("validation_errors") == "")
+        .withColumn("language_pair", F.concat_ws("-", "src_lang", "tgt_lang"))
+        .drop("validation_errors")
+    )
+
+    src_langs = languages.select(
+        F.col("code").alias("src_lang"),
+        F.col("name").alias("src_lang_name"),
+        F.col("script").alias("src_script"),
+        F.col("family").alias("src_family"),
+    )
+    tgt_langs = languages.select(
+        F.col("code").alias("tgt_lang"),
+        F.col("name").alias("tgt_lang_name"),
+        F.col("script").alias("tgt_script"),
+        F.col("family").alias("tgt_family"),
+    )
+
+    enriched = valid.join(src_langs, on="src_lang", how="left").join(tgt_langs, on="tgt_lang", how="left")
+    return enriched, invalid
+
+
 def start_delta_stream(
     df: DataFrame,
     path: str,
@@ -140,9 +210,13 @@ def run_stream(spark: SparkSession) -> None:
     p = paths()
     raw = kafka_stream(spark)
     parsed = parse_kafka_events(raw)
+    languages = load_languages(spark, p["languages"])
+    silver, invalid = silver_events(parsed, languages)
 
     queries = [
         start_delta_stream(parsed, p["bronze"], path_join(p["checkpoint_root"], "bronze"), "translation-bronze", ["date", "hour"]),
+        start_delta_stream(silver, p["silver"], path_join(p["checkpoint_root"], "silver"), "translation-silver", ["date", "language_pair"]),
+        start_delta_stream(invalid, p["silver_invalid"], path_join(p["checkpoint_root"], "silver-invalid"), "translation-silver-invalid", ["date"]),
     ]
 
     try:
@@ -153,17 +227,38 @@ def run_stream(spark: SparkSession) -> None:
                 query.stop()
 
 
+def write_delta(df: DataFrame, path: str, partition_by: Iterable[str] = ()) -> None:
+    writer = df.write.format("delta").mode("overwrite").option("overwriteSchema", "true")
+    if partition_by:
+        writer = writer.partitionBy(*partition_by)
+    writer.save(path)
+
+
+def run_reprocess(spark: SparkSession) -> None:
+    p = paths()
+    bronze = spark.read.format("delta").load(p["bronze"])
+    parsed = parse_bronze_events(bronze)
+    languages = load_languages(spark, p["languages"])
+    silver, invalid = silver_events(parsed, languages)
+
+    write_delta(silver, p["silver"], ["date", "language_pair"])
+    write_delta(invalid, p["silver_invalid"], ["date"])
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["stream"], default=env("JOB_MODE", "stream"))
+    parser.add_argument("--mode", choices=["stream", "reprocess"], default=env("JOB_MODE", "stream"))
     return parser.parse_args()
 
 
 def main() -> None:
-    parse_args()
+    args = parse_args()
     spark = build_spark()
     spark.sparkContext.setLogLevel(env("SPARK_LOG_LEVEL", "INFO"))
-    run_stream(spark)
+    if args.mode == "reprocess":
+        run_reprocess(spark)
+    else:
+        run_stream(spark)
 
 
 if __name__ == "__main__":
