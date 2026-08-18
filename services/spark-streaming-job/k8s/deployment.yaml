@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-streaming-job
+  labels:
+    app: spark-streaming-job
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-streaming-job
+  template:
+    metadata:
+      labels:
+        app: spark-streaming-job
+    spec:
+      containers:
+        - name: spark-streaming-job
+          image: "registry.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/spark-streaming-job:latest"
+          imagePullPolicy: Always
+          command:
+            - /bin/bash
+            - -ec
+          args:
+            - |
+              mkdir -p /tmp/.ivy2
+              exec /opt/spark/bin/spark-submit \
+                --master "${SPARK_MASTER}" \
+                --packages "${SPARK_PACKAGES}" \
+                --conf "spark.jars.ivy=/tmp/.ivy2" \
+                --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
+                --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
+                --conf "spark.hadoop.fs.s3a.endpoint=${S3_ENDPOINT}" \
+                --conf "spark.hadoop.fs.s3a.path.style.access=true" \
+                --conf "spark.hadoop.fs.s3a.connection.ssl.enabled=false" \
+                --conf "spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem" \
+                --conf "spark.hadoop.fs.s3a.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider" \
+                --conf "spark.hadoop.fs.s3a.access.key=${AWS_ACCESS_KEY_ID}" \
+                --conf "spark.hadoop.fs.s3a.secret.key=${AWS_SECRET_ACCESS_KEY}" \
+                /opt/translation/spark-streaming-job/src/main.py \
+                --mode "${JOB_MODE}"
+          envFrom:
+            - configMapRef:
+                name: spark-streaming-job-config
+            - secretRef:
+                name: spark-streaming-job-s3
+          env:
+            - name: HOME
+              value: /tmp
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "3Gi"
