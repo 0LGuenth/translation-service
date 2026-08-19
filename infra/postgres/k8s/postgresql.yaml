@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: analytics-db-credentials
+  labels:
+    app: analytics-db
+type: Opaque
+stringData:
+  POSTGRES_DB: "analytics"
+  POSTGRES_USER: "analytics"
+  POSTGRES_PASSWORD: "analytics-change-me"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: analytics-db-init
+  labels:
+    app: analytics-db
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS language_pair_windows (
+      window_type text NOT NULL,
+      window_start timestamptz NOT NULL,
+      window_end timestamptz NOT NULL,
+      language_pair text NOT NULL,
+      request_count bigint NOT NULL,
+      avg_latency_ms_total double precision,
+      avg_latency_ms_translate double precision,
+      error_count bigint NOT NULL,
+      error_rate double precision,
+      p95_latency_ms_total double precision,
+      updated_at timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (window_type, window_start, window_end, language_pair)
+    );
+
+    CREATE TABLE IF NOT EXISTS global_live_metrics (
+      metric_key text PRIMARY KEY,
+      metric_value double precision NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+
+    CREATE TABLE IF NOT EXISTS user_alerts (
+      alert_type text NOT NULL,
+      window_start timestamptz NOT NULL,
+      window_end timestamptz NOT NULL,
+      user_id_hashed text NOT NULL,
+      request_count bigint NOT NULL,
+      language_pair_count bigint NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (alert_type, window_start, window_end, user_id_hashed)
+    );
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-db
+  labels:
+    app: analytics-db
+spec:
+  type: ClusterIP
+  selector:
+    app: analytics-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: analytics-db
+  labels:
+    app: analytics-db
+spec:
+  serviceName: analytics-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics-db
+  template:
+    metadata:
+      labels:
+        app: analytics-db
+    spec:
+      containers:
+        - name: postgres
+          image: "docker.io/library/postgres:16-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: analytics-db-credentials
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init-sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: init-sql
+          configMap:
+            name: analytics-db-init
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
