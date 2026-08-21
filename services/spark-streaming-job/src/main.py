@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Iterable
+from typing import Iterable, Sequence
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
@@ -38,8 +38,25 @@ def env(name: str, default: str) -> str:
     return os.environ.get(name, default)
 
 
+def env_bool(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def path_join(root: str, child: str) -> str:
     return root.rstrip("/") + "/" + child.strip("/")
+
+
+def postgres_conninfo() -> str:
+    return (
+        f"host={env('POSTGRES_HOST', 'analytics-db')} "
+        f"port={env('POSTGRES_PORT', '5432')} "
+        f"dbname={env('POSTGRES_DB', 'analytics')} "
+        f"user={env('POSTGRES_USER', 'analytics')} "
+        f"password={env('POSTGRES_PASSWORD', 'analytics-change-me')}"
+    )
 
 
 def build_spark() -> SparkSession:
@@ -250,12 +267,114 @@ def start_delta_stream(
     return writer.start(path)
 
 
-def start_gold_stream(df: DataFrame, path: str, checkpoint: str, query_name: str):
+def upsert_language_pair_windows(rows: Sequence, window_type: str) -> None:
+    if not rows:
+        return
+    import psycopg
+
+    sql = """
+        INSERT INTO language_pair_windows (
+          window_type, window_start, window_end, language_pair, request_count,
+          avg_latency_ms_total, avg_latency_ms_translate, error_count,
+          error_rate, p95_latency_ms_total, updated_at
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+        ON CONFLICT (window_type, window_start, window_end, language_pair)
+        DO UPDATE SET
+          request_count = EXCLUDED.request_count,
+          avg_latency_ms_total = EXCLUDED.avg_latency_ms_total,
+          avg_latency_ms_translate = EXCLUDED.avg_latency_ms_translate,
+          error_count = EXCLUDED.error_count,
+          error_rate = EXCLUDED.error_rate,
+          p95_latency_ms_total = EXCLUDED.p95_latency_ms_total,
+          updated_at = now()
+    """
+    metrics_sql = """
+        INSERT INTO global_live_metrics (metric_key, metric_value, updated_at)
+        VALUES (%s, %s, now())
+        ON CONFLICT (metric_key)
+        DO UPDATE SET metric_value = EXCLUDED.metric_value, updated_at = now()
+    """
+    values = [
+        (
+            window_type,
+            row.window_start,
+            row.window_end,
+            row.language_pair,
+            int(row.request_count or 0),
+            row.avg_latency_ms_total,
+            row.avg_latency_ms_translate,
+            int(row.error_count or 0),
+            row.error_rate,
+            row.p95_latency_ms_total,
+        )
+        for row in rows
+    ]
+    with psycopg.connect(postgres_conninfo()) as conn:
+        with conn.cursor() as cur:
+            cur.executemany(sql, values)
+            if window_type == "1m":
+                total_requests = sum(value[4] for value in values)
+                total_errors = sum(value[7] for value in values)
+                weighted_latency = sum((value[5] or 0) * value[4] for value in values)
+                avg_latency = weighted_latency / total_requests if total_requests else 0
+                error_rate = total_errors / total_requests if total_requests else 0
+                cur.executemany(
+                    metrics_sql,
+                    [
+                        ("latest_request_count_1m", total_requests),
+                        ("requests_per_minute", total_requests),
+                        ("avg_latency_ms", avg_latency),
+                        ("error_rate", error_rate),
+                    ],
+                )
+
+
+def upsert_user_alerts(rows: Sequence) -> None:
+    if not rows:
+        return
+    import psycopg
+
+    sql = """
+        INSERT INTO user_alerts (
+          alert_type, window_start, window_end, user_id_hashed,
+          request_count, language_pair_count, updated_at
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, now())
+        ON CONFLICT (alert_type, window_start, window_end, user_id_hashed)
+        DO UPDATE SET
+          request_count = EXCLUDED.request_count,
+          language_pair_count = EXCLUDED.language_pair_count,
+          updated_at = now()
+    """
+    values = [
+        (
+            row.alert_type,
+            row.window_start,
+            row.window_end,
+            row.user_id_hashed,
+            int(row.request_count or 0),
+            int(row.language_pair_count or 0),
+        )
+        for row in rows
+    ]
+    with psycopg.connect(postgres_conninfo()) as conn:
+        with conn.cursor() as cur:
+            cur.executemany(sql, values)
+
+
+def start_gold_stream(df: DataFrame, path: str, checkpoint: str, query_name: str, postgres_kind: str | None = None):
     def write_batch(batch_df: DataFrame, batch_id: int) -> None:
         if batch_df.rdd.isEmpty():
             return
         output = batch_df.withColumn("batch_id", F.lit(batch_id))
         output.write.format("delta").mode("append").partitionBy("date").save(path)
+        if env_bool("POSTGRES_SINK_ENABLED", True) and postgres_kind:
+            rows = output.collect()
+            if postgres_kind in {"1m", "5m"}:
+                upsert_language_pair_windows(rows, postgres_kind)
+            elif postgres_kind == "user_alerts":
+                upsert_user_alerts(rows)
 
     return (
         df.writeStream.queryName(query_name)
@@ -277,9 +396,9 @@ def run_stream(spark: SparkSession) -> None:
         start_delta_stream(parsed, p["bronze"], path_join(p["checkpoint_root"], "bronze"), "translation-bronze", ["date", "hour"]),
         start_delta_stream(silver, p["silver"], path_join(p["checkpoint_root"], "silver"), "translation-silver", ["date", "language_pair"]),
         start_delta_stream(invalid, p["silver_invalid"], path_join(p["checkpoint_root"], "silver-invalid"), "translation-silver-invalid", ["date"]),
-        start_gold_stream(language_pair_agg(silver, "1 minute"), p["gold_1m"], path_join(p["checkpoint_root"], "gold-1m"), "translation-gold-1m"),
-        start_gold_stream(language_pair_agg(silver, "5 minutes", "1 minute"), p["gold_5m"], path_join(p["checkpoint_root"], "gold-5m"), "translation-gold-5m"),
-        start_gold_stream(user_alerts(silver), p["gold_user_alerts"], path_join(p["checkpoint_root"], "gold-user-alerts"), "translation-gold-user-alerts"),
+        start_gold_stream(language_pair_agg(silver, "1 minute"), p["gold_1m"], path_join(p["checkpoint_root"], "gold-1m"), "translation-gold-1m", "1m"),
+        start_gold_stream(language_pair_agg(silver, "5 minutes", "1 minute"), p["gold_5m"], path_join(p["checkpoint_root"], "gold-5m"), "translation-gold-5m", "5m"),
+        start_gold_stream(user_alerts(silver), p["gold_user_alerts"], path_join(p["checkpoint_root"], "gold-user-alerts"), "translation-gold-user-alerts", "user_alerts"),
     ]
 
     try:
@@ -312,6 +431,10 @@ def run_reprocess(spark: SparkSession) -> None:
     write_delta(gold_1m, p["gold_1m"], ["date"])
     write_delta(gold_5m, p["gold_5m"], ["date"])
     write_delta(alerts, p["gold_user_alerts"], ["date"])
+    if env_bool("POSTGRES_SINK_ENABLED", True):
+        upsert_language_pair_windows(gold_1m.collect(), "1m")
+        upsert_language_pair_windows(gold_5m.collect(), "5m")
+        upsert_user_alerts(alerts.collect())
 
 
 def parse_args() -> argparse.Namespace:
