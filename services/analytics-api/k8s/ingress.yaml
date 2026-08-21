@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: analytics-api
+spec:
+  tls:
+    - hosts:
+        - analytics-api.example.invalid
+  rules:
+    - host: analytics-api.example.invalid
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: analytics-api
+                port:
+                  number: 8001
