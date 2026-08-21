@@ -20,7 +20,12 @@ clouds.yaml
 # IDE / OS
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
+Desktop.ini
 
 # Notes
 *max.md
