@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Übersetzer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="workspace">
+      <div class="panel-box">
+        <textarea id="inputText" placeholder="Text hier eingeben oder einfügen"></textarea>
+      </div>
+
+      <div class="panel-box">
+        <div id="result" class="result-box" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="translateButton" class="translate-btn" type="button">
+        Übersetzen
+      </button>
+    </div>
+
+    <div id="status" class="status" aria-live="polite"></div>
+  </div>
+</body>
+</html>
