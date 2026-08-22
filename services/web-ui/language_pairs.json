@@ -1,0 +1,4276 @@
+{
+  "pairs": [
+    {
+      "src_lang": "af",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "af",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "afa",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "am",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "ar",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "art",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "az",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "az",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "az",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "bat",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "be",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "bem",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "bem",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "bem",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "bem",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "bem",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ber",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ber",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ber",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "bg",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "bi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "bi",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "bi",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "bi",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "bn",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "bnt",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "ca",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "cau",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ceb",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ceb",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ceb",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ceb",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ceb",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "cel",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "chk",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "chk",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "chk",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "chk",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "cpf",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "cpp",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "cs",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "cus",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "cy",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "da",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "bi"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "eu"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "hr"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "loz"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ms"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "tl"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "de",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "dra",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ee",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "efi",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "efi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "efi",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "efi",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "efi",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "el",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "el",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "el",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "el",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "el",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "afa"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "az"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "bat"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "bem"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ber"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "bi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "bnt"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ceb"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cel"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "chk"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cpf"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cpp"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cus"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "cy"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "dra"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "eu"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "fiu"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ga"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "gem"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "gl"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "gv"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "hi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "hy"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "id"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "inc"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ine"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "kj"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "lg"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "loz"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "lu"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "lun"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "luo"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "lus"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "map"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mg"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mh"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mk"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mkh"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ml"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mos"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mr"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "mul"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ng"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "nic"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "om"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "phi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "rn"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "roa"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "run"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "rw"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sal"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sem"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sg"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sit"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sk"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sla"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sm"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sn"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sq"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ss"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "st"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "sw"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ti"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tl"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tn"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "to"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tpi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ts"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tut"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tvl"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "tw"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ty"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "umb"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "ur"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "xh"
+    },
+    {
+      "src_lang": "en",
+      "tgt_lang": "zh"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "eo",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ber"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "bi"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ceb"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "eu"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "gl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "hr"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "id"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "loz"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "lus"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "mk"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "rn"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "rw"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "sg"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "sm"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "sn"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "srn"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "st"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "tl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "tn"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "to"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "tpi"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "tvl"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "tw"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ty"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "ve"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "war"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "xh"
+    },
+    {
+      "src_lang": "es",
+      "tgt_lang": "yo"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "et",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "eu",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "eu",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "eu",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "eu",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "bem"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ceb"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "hr"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "id"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "lg"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "lu"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "lus"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "lv"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "mg"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "mh"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "mk"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "mos"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "run"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "rw"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sg"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sk"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sm"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sn"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sq"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "srn"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "st"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "sw"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "tn"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "to"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "tpi"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ts"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "tvl"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "tw"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ty"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "ve"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "war"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "xh"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "yap"
+    },
+    {
+      "src_lang": "fi",
+      "tgt_lang": "yo"
+    },
+    {
+      "src_lang": "fiu",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "fj",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "fj",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "bem"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ber"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "bi"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ceb"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "hr"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "id"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "lg"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "loz"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "lu"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "lus"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "mh"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "mos"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ms"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "run"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "rw"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sg"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sk"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sm"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sn"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "srn"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "st"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tl"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tn"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "to"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tpi"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ts"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tum"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tvl"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "tw"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ty"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "ve"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "war"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "xh"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "yap"
+    },
+    {
+      "src_lang": "fr",
+      "tgt_lang": "yo"
+    },
+    {
+      "src_lang": "ga",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "gaa",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "gem",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "gil",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "gil",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "gil",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "gil",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "gil",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "gl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "gl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "gl",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "gv",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ha",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ha",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ha",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ha",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ha",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "he",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "hi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "hi",
+      "tgt_lang": "ur"
+    },
+    {
+      "src_lang": "hil",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "hil",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "hil",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ho",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "hr",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "hr",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "hr",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "hr",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ht",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ht",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ht",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ht",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ht",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "hu",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "hy",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "hy",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "id",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "id",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "id",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "id",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "id",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ig",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ilo",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ilo",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ilo",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ilo",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ilo",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "inc",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ine",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "is",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "ms"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "it",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "ms"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "ja",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "ka",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ka",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "kab",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "kg",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "kg",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "kg",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "kg",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "kj",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "kl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "ko",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lg",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lg",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lg",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "lg",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lg",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ln",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ln",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ln",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ln",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "loz",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lt",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "lu",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lu",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lu",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "lu",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lu",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lua",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lua",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lua",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "lua",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lua",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lun",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "luo",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lus",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lus",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lus",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "lus",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lus",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "lv",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "mg",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mg",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "mh",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mh",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "mh",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "mk",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mk",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "mk",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "mk",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "mkh",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ml",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mos",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mr",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ms",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ms",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ms",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "mt",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "mt",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "mt",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "mt",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "mt",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "mul",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ng",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "nic",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "niu",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "nl",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "no",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "nso",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ny",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "ny",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ny",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "om",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pa",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pag",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "pag",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pag",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "pag",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "pag",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "pap",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "pap",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pap",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "pap",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "pap",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "phi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "pl",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "pon",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "pon",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "pon",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "pon",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "pon",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "pt",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "pt",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "pt",
+      "tgt_lang": "gl"
+    },
+    {
+      "src_lang": "pt",
+      "tgt_lang": "tl"
+    },
+    {
+      "src_lang": "pt",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "rn",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "rn",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "rn",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "rn",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "rn",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "ro",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "ro",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ro",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ro",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "roa",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "da"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "eu"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "hy"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "lv"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "ru",
+      "tgt_lang": "vi"
+    },
+    {
+      "src_lang": "run",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "run",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "run",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "rw",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "rw",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "rw",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "rw",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sal",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sem",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sg",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sg",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sg",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "sg",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sg",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sk",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sk",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sk",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "sk",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sk",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sl",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "sla",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sm",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sm",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sm",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sn",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sn",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sn",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sn",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sq",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sq",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sq",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "srn",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "srn",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "srn",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "srn",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ss",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "st",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "st",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "st",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "st",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "st",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "af"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "bem"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "bi"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ceb"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "chk"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ee"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "efi"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "el"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "et"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "fj"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "gaa"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "gil"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ha"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "hil"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ho"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "hr"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ht"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "id"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ig"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ilo"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "is"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "kg"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "lg"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ln"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "lu"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "lua"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "lus"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "lv"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "mh"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "mos"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "mt"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "niu"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "nso"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ny"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "pag"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "pap"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "pon"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ro"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "run"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "rw"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sg"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sk"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sm"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sn"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "sq"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "srn"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "st"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "th"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "tn"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "to"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "tpi"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ts"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "tum"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "tvl"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "tw"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ty"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "umb"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "ve"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "war"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "xh"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "yap"
+    },
+    {
+      "src_lang": "sv",
+      "tgt_lang": "yo"
+    },
+    {
+      "src_lang": "th",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "th",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ti",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tl",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "tl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tl",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "tn",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tn",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tn",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "tn",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "to",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "to",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "to",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "to",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tpi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tpi",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "ar"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "az"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "lt"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tr",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "ts",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ts",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ts",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ts",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ts",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tum",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tum",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tum",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "tum",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tvl",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "tvl",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tvl",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "tvl",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "tvl",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "tw",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "tw",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "tw",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "tw",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "ty",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "ty",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "ty",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "ty",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "ca"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "cs"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "hu"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "no"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "pl"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "pt"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "sl"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "uk",
+      "tgt_lang": "tr"
+    },
+    {
+      "src_lang": "umb",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ur",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ve",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "ve",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "eo"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "vi",
+      "tgt_lang": "ru"
+    },
+    {
+      "src_lang": "wa",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "wal",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "war",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "war",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "war",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "war",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "war",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "xh",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "xh",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "xh",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "xh",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "yap",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "yap",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "yap",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "yo",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "yo",
+      "tgt_lang": "es"
+    },
+    {
+      "src_lang": "yo",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "yo",
+      "tgt_lang": "fr"
+    },
+    {
+      "src_lang": "yo",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "bg"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "de"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "en"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "fi"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "he"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "it"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "ms"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "nl"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "sv"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "uk"
+    },
+    {
+      "src_lang": "zh",
+      "tgt_lang": "vi"
+    }
+  ]
+}
