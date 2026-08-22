@@ -27,5 +27,85 @@
 
     <div id="status" class="status" aria-live="polite"></div>
   </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    const input = $('inputText');
+    const result = $('result');
+    const status = $('status');
+    const translateBtn = $('translateButton');
+
+    const API = location.protocol === 'file:'
+      ? 'http://localhost:8000'
+      : location.origin;
+
+
+    function setStatus(message, type = '') {
+      status.textContent = message;
+      status.className = `status${type ? ` ${type}` : ''}`;
+    }
+
+
+    async function translate() {
+      const text = input.value.trim();
+
+      if (!text) {
+        return setStatus(
+          'Bitte geben Sie einen Text ein.',
+          'error'
+        );
+      }
+
+      translateBtn.disabled = true;
+      result.textContent = '...';
+      setStatus('Übersetzung läuft…', 'info');
+
+      try {
+        const response = await fetch(`${API}/translate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Source': 'web-ui'
+          },
+          body: JSON.stringify({
+            text,
+            src_lang: 'de',
+            tgt_lang: 'en'
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || 'Übersetzung fehlgeschlagen'
+          );
+        }
+
+        result.textContent =
+          data.translated || 'Keine Übersetzung erhalten.';
+
+        setStatus(
+          `Erfolgreich. req_id: ${data.req_id || 'n/a'}`,
+          'success'
+        );
+
+      } catch (error) {
+        result.textContent = 'Fehler';
+
+        setStatus(
+          error.message || 'Unbekannter Fehler',
+          'error'
+        );
+
+      } finally {
+        translateBtn.disabled = false;
+      }
+    }
+
+
+    translateBtn.addEventListener('click', translate);
+  </script>
 </body>
 </html>
