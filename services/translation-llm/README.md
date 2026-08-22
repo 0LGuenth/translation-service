@@ -23,8 +23,12 @@ backed by a PVC in k8s so restarts don't re-download.
 
 ## Run locally
 
+The Docker image bakes in the `nltk` punkt data, but a local run has to fetch
+it once (otherwise the first `/translate` fails on sentence splitting):
+
 ```sh
 pip install -r requirements.txt
+python -m nltk.downloader punkt punkt_tab
 uvicorn main:app --host 0.0.0.0 --port 8000
 curl -X POST localhost:8000/translate \
   -H content-type:application/json \
