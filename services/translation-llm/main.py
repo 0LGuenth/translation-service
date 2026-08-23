@@ -5,7 +5,6 @@
 # Matches the {translated, model} shape the Go gateway's httpBackend expects.
 import logging
 import os
-import re
 import threading
 import time
 from collections import OrderedDict
@@ -13,6 +12,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from huggingface_hub import snapshot_download
+from nltk.tokenize import sent_tokenize
 from pydantic import BaseModel, Field
 from transformers import pipeline
 
@@ -202,15 +202,25 @@ def ready():
     return {"status": "ready"}
 
 
-# Split sentence; opus-mt sometimes has problems with multi-sentence translation
-_SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
+# OPUS-MT is sentence-level — feeding a paragraph drops everything after the
+# first <eos>. punkt knows abbreviations per language; map the src code to
+# punkt's language name and fall back to english (its default) for anything
+# punkt doesn't ship.
+_PUNKT_LANG = {
+    "de": "german", "en": "english", "fr": "french", "es": "spanish",
+    "it": "italian", "pt": "portuguese", "nl": "dutch", "pl": "polish",
+    "cs": "czech", "da": "danish", "fi": "finnish", "no": "norwegian",
+    "sv": "swedish", "tr": "turkish", "ru": "russian", "et": "estonian",
+    "el": "greek", "sl": "slovene",
+}
 
 
 @app.post("/translate", response_model=TranslateResp)
 def translate(req: TranslateReq):
     t0 = time.time()
     pipe = _get_pipe(req.src_lang, req.tgt_lang)
-    sentences = [s for s in _SENT_SPLIT.split(req.text.strip()) if s]
+    lang = _PUNKT_LANG.get(req.src_lang.lower()[:2], "english")
+    sentences = sent_tokenize(req.text.strip(), language=lang)
     outs = pipe(sentences) if sentences else []
     translated = " ".join(o["translation_text"] for o in outs)
     src_norm, tgt_norm = _normalize_pair(req.src_lang, req.tgt_lang)
