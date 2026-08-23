@@ -13,6 +13,10 @@ spec:
       app: translation-api
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8000"
       labels:
         app: translation-api
     spec:
@@ -56,6 +60,9 @@ spec:
               value: "translation-errors"
             - name: KAFKA_WRITE_TIMEOUT
               value: "2s"
+            # OTLP gRPC endpoint for traces; unset = tracing disabled (no-op)
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "grafana-tempo:4317"
           resources:
             requests:
               cpu: "100m"
