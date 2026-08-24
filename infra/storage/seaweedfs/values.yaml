@@ -1,0 +1,54 @@
+global:
+  storage:
+    s3Endpoint: http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333
+    s3AccessKey: translation-spark
+    s3SecretKey: translation-spark-secret-change-me
+    s3Region: us-east-1
+    bronzeBucket: translation-bronze
+    silverBucket: translation-silver
+    goldBucket: translation-gold
+    checkpointsBucket: translation-checkpoints
+
+seaweedfs:
+  enabled: true
+  namespace: seaweedfs
+  image: chrislusf/seaweedfs:4.41
+  imagePullPolicy: IfNotPresent
+  labels:
+    app.kubernetes.io/part-of: translate-platform
+
+  master:
+    replicas: 1
+    storageSize: 1Gi
+    volumeSizeLimitMB: 1024
+
+  volume:
+    replicas: 1
+    storageSize: 20Gi
+    maxVolumes: 32
+
+  filer:
+    replicas: 1
+    storageSize: 2Gi
+
+  s3:
+    secretName: seaweedfs-s3-credentials
+    accessKey: translation-spark
+    secretKey: translation-spark-secret-change-me
+    region: us-east-1
+
+  buckets:
+    - translation-bronze
+    - translation-silver
+    - translation-gold
+    - translation-checkpoints
+
+  bucketInit:
+    image: amazon/aws-cli:2.15.57
+
+spark-streaming-job:
+  enabled: true
+  kafka:
+    bootstrapServers: translation-kafka-kafka-bootstrap:9092
+    topic: translation-events,translation-errors
+    startingOffsets: earliest
