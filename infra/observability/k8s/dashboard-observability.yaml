@@ -1,0 +1,304 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-observability
+  labels:
+    app: grafana
+data:
+  platform-observability.json: |
+    {
+      "uid": "platform-observability",
+      "title": "Observability Overview",
+      "tags": ["observability", "prometheus", "loki", "tempo"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "time": { "from": "now-1h", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Requests pro Minute",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [{ "refId": "A", "expr": "(sum(rate(translation_requests_total[1m])) or vector(0)) * 60", "legendFormat": "Requests/min" }],
+          "fieldConfig": { "defaults": { "decimals": 1, "unit": "reqpm" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Fehlerquote",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [{ "refId": "A", "expr": "(sum(increase(translation_requests_total{status=\"error\"}[$__range])) or vector(0)) / clamp_min((sum(increase(translation_requests_total[$__range])) or vector(0)), 1)", "legendFormat": "Fehlerquote" }],
+          "fieldConfig": { "defaults": { "decimals": 2, "unit": "percentunit", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.05 }] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Log-Ereignisse",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\".+\"}[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Fehler/Warnungen in Logs",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\".+\"} |~ \"(?i)(error|warn|exception|timeout|panic|failed)\"[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 10 }] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "Requests und Fehler pro Minute",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            { "refId": "A", "expr": "(sum(rate(translation_requests_total[1m])) or vector(0)) * 60", "legendFormat": "Requests/min" },
+            { "refId": "B", "expr": "(sum(rate(translation_requests_total{status=\"error\"}[1m])) or vector(0)) * 60", "legendFormat": "Fehler/min" }
+          ],
+          "fieldConfig": { "defaults": { "decimals": 1, "unit": "reqpm" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Log-Rate nach Container",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum by (container) (rate({namespace=~\".+\"}[1m]))", "legendFormat": "{{container}}" }],
+          "fieldConfig": { "defaults": { "decimals": 2, "unit": "ops" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 7,
+          "type": "logs",
+          "title": "Aktuelle Platform-Logs",
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 12 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "{namespace=~\".+\"}" }],
+          "options": { "showTime": true, "showLabels": false, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": true, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" }
+        },
+        {
+          "id": 8,
+          "type": "table",
+          "title": "Aktuelle Traces",
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 12 },
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "targets": [{ "refId": "A", "queryType": "traceql", "query": "{ }", "limit": 20, "tableType": "traces", "datasource": { "type": "tempo", "uid": "tempo" } }],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "countRows": false, "fields": "" } }
+        }
+      ]
+    }
+  platform-logs.json: |
+    {
+      "uid": "platform-logs",
+      "title": "Platform Logs",
+      "tags": ["logs", "alloy", "loki"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "5s",
+      "time": { "from": "now-30m", "to": "now" },
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "label": "Namespace",
+            "type": "query",
+            "datasource": { "type": "loki", "uid": "loki" },
+            "query": "label_values(namespace)",
+            "refresh": 1,
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".+",
+            "current": { "selected": true, "text": "All", "value": ".+" }
+          },
+          {
+            "name": "pod",
+            "label": "Pod",
+            "type": "query",
+            "datasource": { "type": "loki", "uid": "loki" },
+            "query": "label_values({namespace=~\"$namespace\"}, pod)",
+            "refresh": 1,
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".+",
+            "current": { "selected": true, "text": "All", "value": ".+" }
+          },
+          {
+            "name": "container",
+            "label": "Container",
+            "type": "query",
+            "datasource": { "type": "loki", "uid": "loki" },
+            "query": "label_values({namespace=~\"$namespace\", pod=~\"$pod\"}, container)",
+            "refresh": 1,
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".+",
+            "current": { "selected": true, "text": "All", "value": ".+" }
+          },
+          {
+            "name": "search",
+            "label": "Suche Regex",
+            "type": "textbox",
+            "query": ".",
+            "current": { "selected": true, "text": ".", "value": "." }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Log-Ereignisse",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |~ \"$search\"[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short" }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Fehler/Warnungen",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |~ \"(?i)(error|warn|exception|timeout|panic|failed)\"[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 10 }] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Translation API Fehler",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\"$namespace\", pod=~\"translation-api-.+\"} |~ \"(?i)(error|failed|timeout|validation)\"[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Kafka Publish Warnungen",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum(count_over_time({namespace=~\"$namespace\"} |= \"kafka publish failed\"[$__range]))" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "auto", "textMode": "auto", "colorMode": "value", "graphMode": "area", "justifyMode": "auto" }
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "Log-Rate nach Container",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum by (container) (rate({namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |~ \"$search\"[1m]))", "legendFormat": "{{container}}" }],
+          "fieldConfig": { "defaults": { "decimals": 2, "unit": "ops" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Fehler/Warnungen nach Container",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "sum by (container) (count_over_time({namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |~ \"(?i)(error|warn|exception|timeout|panic|failed)\"[5m]))", "legendFormat": "{{container}}" }],
+          "fieldConfig": { "defaults": { "decimals": 0, "unit": "short" }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 7,
+          "type": "logs",
+          "title": "Live Logs",
+          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 12 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "{namespace=~\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |~ \"$search\"" }],
+          "options": { "showTime": true, "showLabels": false, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": true, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" }
+        },
+        {
+          "id": 8,
+          "type": "logs",
+          "title": "Translation API Fehlerlogs",
+          "gridPos": { "h": 9, "w": 24, "x": 0, "y": 24 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [{ "refId": "A", "expr": "{namespace=~\"$namespace\", pod=~\"translation-api-.+\"} |~ \"(?i)(error|failed|timeout|validation)\"" }],
+          "options": { "showTime": true, "showLabels": true, "showCommonLabels": false, "wrapLogMessage": true, "prettifyLogMessage": true, "enableLogDetails": true, "dedupStrategy": "none", "sortOrder": "Descending" }
+        }
+      ]
+    }
+  trace-explorer.json: |
+    {
+      "uid": "trace-explorer",
+      "title": "Trace Explorer",
+      "tags": ["traces", "otel", "tempo"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "time": { "from": "now-1h", "to": "now" },
+      "templating": {
+        "list": [
+          {
+            "name": "traceql",
+            "label": "TraceQL",
+            "type": "textbox",
+            "query": "{ }",
+            "current": { "selected": true, "text": "{ }", "value": "{ }" }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "table",
+          "title": "Aktuelle Traces",
+          "gridPos": { "h": 9, "w": 24, "x": 0, "y": 0 },
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "targets": [{ "refId": "A", "queryType": "traceql", "query": "$traceql", "limit": 50, "tableType": "traces", "datasource": { "type": "tempo", "uid": "tempo" } }],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "countRows": false, "fields": "" } }
+        },
+        {
+          "id": 2,
+          "type": "table",
+          "title": "Langsame Traces",
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 9 },
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "targets": [{ "refId": "A", "queryType": "traceql", "query": "{ duration > 500ms }", "limit": 25, "tableType": "traces", "datasource": { "type": "tempo", "uid": "tempo" } }],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "countRows": false, "fields": "" } }
+        },
+        {
+          "id": 3,
+          "type": "table",
+          "title": "Fehler-Traces",
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 9 },
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "targets": [{ "refId": "A", "queryType": "traceql", "query": "{ status = error }", "limit": 25, "tableType": "traces", "datasource": { "type": "tempo", "uid": "tempo" } }],
+          "fieldConfig": { "defaults": {}, "overrides": [] },
+          "options": { "showHeader": true, "cellHeight": "sm", "footer": { "show": false, "reducer": ["sum"], "countRows": false, "fields": "" } }
+        },
+        {
+          "id": 4,
+          "type": "text",
+          "title": "OTLP Ziele",
+          "gridPos": { "h": 5, "w": 24, "x": 0, "y": 18 },
+          "options": {
+            "mode": "markdown",
+            "content": "- OTLP/gRPC: `grafana-tempo:4317`\n- OTLP/HTTP: `http://grafana-tempo:4318`\n- Grafana Datasource: `tempo`\n\nDie Panels zeigen Daten, sobald Services OpenTelemetry-Spans an Tempo senden."
+          }
+        }
+      ]
+    }

@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-kubernetes-utilization
+  labels:
+    app: grafana
+data:
+  kubernetes-utilization.json: |
+    {
+      "uid": "kubernetes-utilization",
+      "title": "Kubernetes Auslastung",
+      "tags": ["kubernetes", "nodes", "pods"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "time": { "from": "now-30m", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "Node CPU-Auslastung",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (node) (rate(container_cpu_usage_seconds_total{pod!=\"\", container!=\"\", container!=\"POD\", image!=\"\"}[5m])) / sum by (node) (machine_cpu_cores)",
+              "legendFormat": "{{node}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 2 }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "Node RAM-Auslastung",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (node) (container_memory_working_set_bytes{pod!=\"\", container!=\"\", container!=\"POD\", image!=\"\"}) / sum by (node) (machine_memory_bytes)",
+              "legendFormat": "{{node}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 2 }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 3,
+          "type": "bargauge",
+          "title": "Top Pods nach CPU",
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "topk(10, sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{pod!=\"\", container!=\"\", container!=\"POD\", image!=\"\"}[5m])))",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "cores", "decimals": 3 }, "overrides": [] },
+          "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true }
+        },
+        {
+          "id": 4,
+          "type": "bargauge",
+          "title": "Top Pods nach RAM",
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "topk(10, sum by (namespace, pod) (container_memory_working_set_bytes{pod!=\"\", container!=\"\", container!=\"POD\", image!=\"\"}))",
+              "legendFormat": "{{namespace}}/{{pod}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 1 }, "overrides": [] },
+          "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true }
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "CPU nach Namespace",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 17 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace!=\"\", container!=\"\", container!=\"POD\", image!=\"\"}[5m]))",
+              "legendFormat": "{{namespace}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "cores", "decimals": 3 }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "RAM nach Namespace",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 17 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (namespace) (container_memory_working_set_bytes{namespace!=\"\", container!=\"\", container!=\"POD\", image!=\"\"})",
+              "legendFormat": "{{namespace}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 1 }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        }
+      ]
+    }
