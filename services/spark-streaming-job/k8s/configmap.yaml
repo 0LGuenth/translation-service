@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-streaming-job-config
+  labels:
+    app: spark-streaming-job
+data:
+  SPARK_APP_NAME: translation-spark-streaming-job
+  SPARK_MASTER: "local[*]"
+  SPARK_LOG_LEVEL: "INFO"
+  SPARK_PACKAGES: "io.delta:delta-spark_2.12:3.2.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.9,org.apache.hadoop:hadoop-aws:3.3.4"
+  JOB_MODE: "stream"
+  KAFKA_BOOTSTRAP_SERVERS: "translation-kafka-kafka-bootstrap:9092"
+  KAFKA_TOPIC: "translation-events,translation-errors"
+  KAFKA_STARTING_OFFSETS: "earliest"
+  KAFKA_FAIL_ON_DATA_LOSS: "false"
+  S3_ENDPOINT: "http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333"
+  BRONZE_PATH: "s3a://translation-bronze/events"
+  CHECKPOINT_ROOT: "s3a://translation-checkpoints/spark-streaming-job"
