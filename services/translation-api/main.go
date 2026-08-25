@@ -104,10 +104,9 @@ type backend interface {
 	Translate(ctx context.Context, in llmTranslateReq) (translateResp, error)
 }
 
-// httpBackend POSTs to translation-llm. Expects the same {translated,model}
-// shape back
+// httpBackend POSTs to a translation-llm pod chosen by the router.
 type httpBackend struct {
-	url    string
+	router *router
 	client *http.Client
 }
 
@@ -122,8 +121,20 @@ func (e *backendError) Error() string {
 }
 
 func (b *httpBackend) Translate(ctx context.Context, in llmTranslateReq) (translateResp, error) {
+	pod := b.router.pick()
+	if pod == nil {
+		return translateResp{}, &backendError{
+			statusCode: http.StatusBadGateway,
+			errorType:  "llm_unavailable",
+			message:    "no translation backends available",
+		}
+	}
+	pod.inflight.Add(1)
+	defer pod.inflight.Add(-1)
+
 	body, _ := json.Marshal(in)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.url+"/translate", bytes.NewReader(body))
+	// pod.addr is host:port (already bracketed for IPv6 via net.JoinHostPort).
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://"+pod.addr+"/translate", bytes.NewReader(body))
 	if err != nil {
 		return translateResp{}, err
 	}
@@ -731,8 +742,14 @@ func main() {
 		log.Error("TRANSLATION_LLM_URL not found; exiting")
 		os.Exit(1)
 	}
+	// Client-side load balancer over the headless llm Service.
+	rt, err := newRouter(url, log)
+	if err != nil {
+		log.Error("router init failed", "url", url, "err", err)
+		os.Exit(1)
+	}
 	backendTimeout := envDuration("TRANSLATION_BACKEND_TIMEOUT", 120*time.Second)
-	backend := &httpBackend{url: url, client: &http.Client{Timeout: backendTimeout}}
+	backend := &httpBackend{router: rt, client: &http.Client{Timeout: backendTimeout}}
 	publisher, err := newEventPublisher(log)
 	if err != nil {
 		log.Error("kafka config invalid", "err", err)
