@@ -70,6 +70,9 @@ def paths() -> dict[str, str]:
         "bronze": env("BRONZE_PATH", "s3a://translation-bronze/events"),
         "silver": env("SILVER_PATH", "s3a://translation-silver/events"),
         "silver_invalid": env("SILVER_INVALID_PATH", "s3a://translation-silver/invalid-events"),
+        "gold_1m": env("GOLD_1M_PATH", "s3a://translation-gold/language-pair-1m"),
+        "gold_5m": env("GOLD_5M_PATH", "s3a://translation-gold/language-pair-5m"),
+        "gold_user_alerts": env("GOLD_USER_ALERTS_PATH", "s3a://translation-gold/user-alerts"),
         "checkpoint_root": env("CHECKPOINT_ROOT", "s3a://translation-checkpoints/spark-streaming-job"),
         "languages": env("LANGUAGES_PATH", "/opt/translation/spark-streaming-job/src/languages.json"),
     }
@@ -188,6 +191,47 @@ def silver_events(parsed: DataFrame, languages: DataFrame) -> tuple[DataFrame, D
     return enriched, invalid
 
 
+def language_pair_agg(df: DataFrame, window_duration: str, slide_duration: str | None = None) -> DataFrame:
+    window_col = F.window("event_time", window_duration, slide_duration) if slide_duration else F.window("event_time", window_duration)
+    source = df.withWatermark("event_time", env("WATERMARK_DELAY", "30 seconds")) if df.isStreaming else df
+    grouped = (
+        source
+        .groupBy(window_col.alias("window"), "language_pair")
+        .agg(
+            F.count("*").alias("request_count"),
+            F.avg("latency_ms_total").alias("avg_latency_ms_total"),
+            F.avg("latency_ms_translate").alias("avg_latency_ms_translate"),
+            F.sum(F.when(F.col("status") != "success", 1).otherwise(0)).alias("error_count"),
+            F.expr("percentile_approx(latency_ms_total, 0.95)").alias("p95_latency_ms_total"),
+        )
+    )
+    return (
+        grouped.withColumn("error_rate", F.col("error_count") / F.col("request_count"))
+        .withColumn("window_start", F.col("window.start"))
+        .withColumn("window_end", F.col("window.end"))
+        .withColumn("date", F.to_date("window_start"))
+        .drop("window")
+    )
+
+
+def user_alerts(df: DataFrame) -> DataFrame:
+    threshold = int(env("USER_ALERT_THRESHOLD", "20"))
+    source = df.withWatermark("event_time", env("WATERMARK_DELAY", "30 seconds")) if df.isStreaming else df
+    grouped = (
+        source
+        .groupBy(F.window("event_time", "5 minutes").alias("window"), "user_id_hashed")
+        .agg(F.count("*").alias("request_count"), F.approx_count_distinct("language_pair").alias("language_pair_count"))
+        .filter(F.col("request_count") >= threshold)
+    )
+    return (
+        grouped.withColumn("alert_type", F.lit("many_requests_per_user_5m"))
+        .withColumn("window_start", F.col("window.start"))
+        .withColumn("window_end", F.col("window.end"))
+        .withColumn("date", F.to_date("window_start"))
+        .drop("window")
+    )
+
+
 def start_delta_stream(
     df: DataFrame,
     path: str,
@@ -206,6 +250,22 @@ def start_delta_stream(
     return writer.start(path)
 
 
+def start_gold_stream(df: DataFrame, path: str, checkpoint: str, query_name: str):
+    def write_batch(batch_df: DataFrame, batch_id: int) -> None:
+        if batch_df.rdd.isEmpty():
+            return
+        output = batch_df.withColumn("batch_id", F.lit(batch_id))
+        output.write.format("delta").mode("append").partitionBy("date").save(path)
+
+    return (
+        df.writeStream.queryName(query_name)
+        .outputMode("update")
+        .option("checkpointLocation", checkpoint)
+        .foreachBatch(write_batch)
+        .start()
+    )
+
+
 def run_stream(spark: SparkSession) -> None:
     p = paths()
     raw = kafka_stream(spark)
@@ -217,6 +277,9 @@ def run_stream(spark: SparkSession) -> None:
         start_delta_stream(parsed, p["bronze"], path_join(p["checkpoint_root"], "bronze"), "translation-bronze", ["date", "hour"]),
         start_delta_stream(silver, p["silver"], path_join(p["checkpoint_root"], "silver"), "translation-silver", ["date", "language_pair"]),
         start_delta_stream(invalid, p["silver_invalid"], path_join(p["checkpoint_root"], "silver-invalid"), "translation-silver-invalid", ["date"]),
+        start_gold_stream(language_pair_agg(silver, "1 minute"), p["gold_1m"], path_join(p["checkpoint_root"], "gold-1m"), "translation-gold-1m"),
+        start_gold_stream(language_pair_agg(silver, "5 minutes", "1 minute"), p["gold_5m"], path_join(p["checkpoint_root"], "gold-5m"), "translation-gold-5m"),
+        start_gold_stream(user_alerts(silver), p["gold_user_alerts"], path_join(p["checkpoint_root"], "gold-user-alerts"), "translation-gold-user-alerts"),
     ]
 
     try:
@@ -243,6 +306,12 @@ def run_reprocess(spark: SparkSession) -> None:
 
     write_delta(silver, p["silver"], ["date", "language_pair"])
     write_delta(invalid, p["silver_invalid"], ["date"])
+    gold_1m = language_pair_agg(silver, "1 minute")
+    gold_5m = language_pair_agg(silver, "5 minutes", "1 minute")
+    alerts = user_alerts(silver)
+    write_delta(gold_1m, p["gold_1m"], ["date"])
+    write_delta(gold_5m, p["gold_5m"], ["date"])
+    write_delta(alerts, p["gold_user_alerts"], ["date"])
 
 
 def parse_args() -> argparse.Namespace:
