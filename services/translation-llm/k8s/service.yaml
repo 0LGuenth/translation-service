@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: translation-llm
 spec:
-  type: ClusterIP
+  # Headless: DNS resolves to pod IPs so the api router can load-balance.
+  clusterIP: None
   selector:
     app: translation-llm
   ports:
