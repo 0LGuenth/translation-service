@@ -108,6 +108,7 @@ type backend interface {
 type httpBackend struct {
 	router *router
 	client *http.Client
+	log    *slog.Logger
 }
 
 type backendError struct {
@@ -121,7 +122,7 @@ func (e *backendError) Error() string {
 }
 
 func (b *httpBackend) Translate(ctx context.Context, in llmTranslateReq) (translateResp, error) {
-	pod := b.router.pick()
+	pod, reason := b.router.pick(in.SrcLang, in.TgtLang)
 	if pod == nil {
 		return translateResp{}, &backendError{
 			statusCode: http.StatusBadGateway,
@@ -129,6 +130,8 @@ func (b *httpBackend) Translate(ctx context.Context, in llmTranslateReq) (transl
 			message:    "no translation backends available",
 		}
 	}
+	pair := strings.ToLower(in.SrcLang) + "-" + strings.ToLower(in.TgtLang)
+	b.log.Info("routed", "pair", pair, "pod", pod.addr, "reason", reason, "inflight", pod.inflight.Load())
 	pod.inflight.Add(1)
 	defer pod.inflight.Add(-1)
 
@@ -743,13 +746,13 @@ func main() {
 		os.Exit(1)
 	}
 	// Client-side load balancer over the headless llm Service.
-	rt, err := newRouter(url, log)
+	rt, err := newRouter(url, os.Getenv("HOT_PAIRS"), log)
 	if err != nil {
 		log.Error("router init failed", "url", url, "err", err)
 		os.Exit(1)
 	}
 	backendTimeout := envDuration("TRANSLATION_BACKEND_TIMEOUT", 120*time.Second)
-	backend := &httpBackend{router: rt, client: &http.Client{Timeout: backendTimeout}}
+	backend := &httpBackend{router: rt, client: &http.Client{Timeout: backendTimeout}, log: log}
 	publisher, err := newEventPublisher(log)
 	if err != nil {
 		log.Error("kafka config invalid", "err", err)

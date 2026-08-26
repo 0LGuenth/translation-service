@@ -26,9 +26,12 @@ spec:
           ports:
             - containerPort: 8000
           env:
-            # Preload at startup
+            # Preload at startup; these are also the pinned (never-evicted) pairs
             - name: PRELOAD_PAIRS
               value: "de-en,en-de"
+            # Cap loaded pipelines to fit the 3Gi limit (~1Gi base + ~200Mi/model).
+            - name: MAX_MODELS
+              value: "6"
           resources:
             requests:
               # OPUS-MT inference on CPU

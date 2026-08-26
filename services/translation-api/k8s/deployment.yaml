@@ -49,6 +49,9 @@ spec:
             # Empty allows all pairs; comma-separated src-tgt enables allowlist mode
             - name: SUPPORTED_PAIRS
               value: ""
+            # Hot pairs balance across all pods. Keep aligned with PRELOAD_PAIRS.
+            - name: HOT_PAIRS
+              value: "de-en,en-de"
             # Publish translation events to Kafka for the streaming pipeline
             - name: KAFKA_ENABLED
               value: "true"

@@ -54,6 +54,8 @@ def _parse_positive_int(raw: str, default: int = 0) -> int:
 
 _SUPPORTED_PAIRS = _parse_pairs(os.getenv("SUPPORTED_PAIRS", ""))
 _MAX_MODELS = _parse_positive_int(os.getenv("MAX_MODELS", "0"))
+# Pinned (preloaded) pairs are never LRU-evicted. Same env as the preload.
+_PINNED_PAIRS = _parse_pairs(os.getenv("PRELOAD_PAIRS", "de-en"))
 
 
 def _model_name(src: str, tgt: str) -> str:
@@ -112,8 +114,17 @@ def _get_pipe(src: str, tgt: str):
                 _pipes[key] = p
                 _pipes.move_to_end(key)
                 while _MAX_MODELS > 0 and len(_pipes) > _MAX_MODELS:
-                    evicted, _ = _pipes.popitem(last=False)
-                    log.info("evicted model %s", _model_name(*evicted))
+                    # Evict the least-recently-used non-pinned pipe (oldest first).
+                    victim = next((k for k in _pipes if k not in _PINNED_PAIRS), None)
+                    if victim is None:
+                        log.warning(
+                            "cannot evict: all %d loaded models are pinned (MAX_MODELS=%d)",
+                            len(_pipes),
+                            _MAX_MODELS,
+                        )
+                        break
+                    del _pipes[victim]
+                    log.info("evicted model %s", _model_name(*victim))
             return p
         finally:
             with _state_lock:
