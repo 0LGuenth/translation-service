@@ -1,0 +1,19 @@
+---
+- name: Build and push all service images
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../../.."
+    zone: "{{ lookup('env', 'ZONE') | default('', true) }}"
+    registry_host: "{{ lookup('env', 'REGISTRY_HOST') | default('registry.' ~ zone, true) }}"
+    podman_push_extra_args: "{{ (lookup('env', 'PODMAN_PUSH_ARGS') | default('--tls-verify=false', true)).split() }}"
+    image_services:
+      - { name: translation-api,      dir: services/translation-api }
+      - { name: translation-llm,      dir: services/translation-llm }
+      - { name: web-ui,               dir: services/web-ui }
+      - { name: analytics-api,        dir: services/analytics-api }
+      - { name: spark-streaming-job,  dir: services/spark-streaming-job }
+  tasks:
+    - name: Build + push images
+      ansible.builtin.import_tasks: ../tasks/build-service-images.yaml

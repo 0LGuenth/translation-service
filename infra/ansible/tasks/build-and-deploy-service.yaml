@@ -1,0 +1,29 @@
+---
+# Build+push one service image, apply its manifests, restart, and wait.
+# Inputs: target_service, target_rollout (e.g. deployment/translation-api),
+#   plus common vars (repo_root, registry_host, zone, kubeconfig_path, rollout_timeout).
+- name: Build and push target service image
+  ansible.builtin.import_tasks: build-service-images.yaml
+  vars:
+    image_services:
+      - { name: "{{ target_service }}", dir: "services/{{ target_service }}" }
+
+- name: Apply target service manifests
+  ansible.builtin.import_tasks: apply-manifests.yaml
+  vars:
+    manifest_globs:
+      - "{{ repo_root }}/services/{{ target_service }}/k8s/*.yaml"
+
+- name: Restart rollout to pull the freshly pushed :latest image
+  ansible.builtin.command:
+    argv: [kubectl, rollout, restart, "{{ target_rollout }}", -n, default]
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: true
+
+- name: Wait for rollout
+  ansible.builtin.command:
+    argv: [kubectl, rollout, status, "{{ target_rollout }}", -n, default, --timeout, "{{ rollout_timeout }}"]
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false

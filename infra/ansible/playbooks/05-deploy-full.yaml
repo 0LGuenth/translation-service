@@ -1,0 +1,14 @@
+---
+# One-shot deploy: build images -> install Strimzi -> deploy platform.
+# Uncomment to bootstrap the cluster first (needs a real inventory):
+# - name: Bootstrap the k3s cluster
+#   ansible.builtin.import_playbook: ../deploy.yaml
+
+- name: Build all service images
+  ansible.builtin.import_playbook: 02-build-images.yaml
+
+- name: Install Strimzi operator
+  ansible.builtin.import_playbook: 03-install-strimzi.yaml
+
+- name: Deploy platform
+  ansible.builtin.import_playbook: 04-deploy-platform.yaml

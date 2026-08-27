@@ -1,0 +1,41 @@
+---
+# Apply raw k8s manifests, substituting the zone placeholder with {{ zone }}.
+# Inputs: manifest_globs (glob list, applied in order), apply_namespace (opt),
+#   zone, kubeconfig_path
+- name: Require zone
+  ansible.builtin.assert:
+    that: zone | length > 0
+    fail_msg: "Set zone, e.g. -e zone=s241646-at-student-dhbw-mannheim-de.users.dhbw.site"
+
+- name: Reset manifest file accumulator
+  ansible.builtin.set_fact:
+    _manifest_files: []
+
+- name: Expand manifest globs (preserving group order)
+  ansible.builtin.set_fact:
+    _manifest_files: "{{ _manifest_files + (q('fileglob', item) | sort) }}"
+  loop: "{{ manifest_globs }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Fail if no manifests matched
+  ansible.builtin.assert:
+    that: _manifest_files | length > 0
+    fail_msg: "No manifests matched globs: {{ manifest_globs }}"
+
+- name: Apply manifests
+  # Substitutes placeholder hosts (<id>...dhbw.site -> {{ zone }},
+  # *.example.invalid -> *.{{ zone }}); select drops empty trailing docs.
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    kubeconfig: "{{ kubeconfig_path }}"
+    namespace: "{{ apply_namespace | default(omit, true) }}"
+    definition: >-
+      {{ lookup('file', item)
+         | regex_replace('[A-Za-z0-9]+-at-student-dhbw-mannheim-de\.users\.dhbw\.site', zone)
+         | regex_replace('\.example\.invalid', '.' ~ zone)
+         | from_yaml_all | select | list }}
+  loop: "{{ _manifest_files }}"
+  loop_control:
+    label: "{{ item | basename }}"

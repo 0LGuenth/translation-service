@@ -1,0 +1,74 @@
+---
+- name: Deploy the translate platform (raw manifests, in dependency order)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../../.."
+    zone: "{{ lookup('env', 'ZONE') | default('', true) }}"
+    kubeconfig_path: "{{ lookup('env', 'KUBECONFIG') | default(playbook_dir ~ '/../kubeconfig-generated.yaml', true) }}"
+    rollout_timeout: "{{ lookup('env', 'ROLLOUT_TIMEOUT') | default('300s', true) }}"
+    observability_namespace: translate-platform
+    # Ordered service groups applied to the default namespace.
+    service_dirs:
+      - translation-llm
+      - translation-api
+      - web-ui
+      - analytics-api
+      - spark-streaming-job
+  tasks:
+    # 1. Storage first (creates its own `seaweedfs` namespace).
+    - name: Apply SeaweedFS
+      ansible.builtin.import_tasks: ../tasks/apply-manifests.yaml
+      vars:
+        manifest_globs:
+          - "{{ repo_root }}/infra/storage/seaweedfs/k8s/*.yaml"
+
+    # 2. Kafka (Strimzi CRs) — requires 03-install-strimzi to have run.
+    - name: Apply Kafka (Strimzi custom resources)
+      ansible.builtin.import_tasks: ../tasks/apply-manifests.yaml
+      vars:
+        manifest_globs:
+          - "{{ repo_root }}/infra/kafka/kafka.yaml"
+
+    # 3. Postgres.
+    - name: Apply Postgres
+      ansible.builtin.import_tasks: ../tasks/apply-manifests.yaml
+      vars:
+        manifest_globs:
+          - "{{ repo_root }}/infra/postgres/k8s/*.yaml"
+
+    # 4. Application services (image/host placeholder -> {{ zone }}).
+    - name: Apply application services
+      ansible.builtin.import_tasks: ../tasks/apply-manifests.yaml
+      vars:
+        manifest_globs: "{{ service_dirs | map('regex_replace', '^(.*)$', repo_root ~ '/services/\\1/k8s/*.yaml') | list }}"
+
+    # 5. Observability into the translate-platform namespace.
+    - name: Ensure observability namespace
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_path }}"
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ observability_namespace }}"
+
+    - name: Apply observability
+      ansible.builtin.import_tasks: ../tasks/apply-manifests.yaml
+      vars:
+        apply_namespace: "{{ observability_namespace }}"
+        manifest_globs:
+          - "{{ repo_root }}/infra/observability/k8s/*.yaml"
+
+    # Wait for the workloads that carry user traffic.
+    - name: Wait for key rollouts
+      ansible.builtin.command:
+        argv: [kubectl, rollout, status, "{{ item }}", -n, default, --timeout, "{{ rollout_timeout }}"]
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      changed_when: false
+      loop:
+        - statefulset/translation-llm
+        - deployment/translation-api
+        - deployment/web-ui

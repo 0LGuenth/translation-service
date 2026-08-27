@@ -1,0 +1,17 @@
+---
+- name: Build and deploy translation-api
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../../.."
+    zone: "{{ lookup('env', 'ZONE') | default('', true) }}"
+    registry_host: "{{ lookup('env', 'REGISTRY_HOST') | default('registry.' ~ zone, true) }}"
+    kubeconfig_path: "{{ lookup('env', 'KUBECONFIG') | default(playbook_dir ~ '/../kubeconfig-generated.yaml', true) }}"
+    rollout_timeout: "{{ lookup('env', 'ROLLOUT_TIMEOUT') | default('300s', true) }}"
+    podman_push_extra_args: "{{ (lookup('env', 'PODMAN_PUSH_ARGS') | default('--tls-verify=false', true)).split() }}"
+    target_service: translation-api
+    target_rollout: deployment/translation-api
+  tasks:
+    - name: Build + deploy service
+      ansible.builtin.import_tasks: ../tasks/build-and-deploy-service.yaml

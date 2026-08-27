@@ -1,0 +1,30 @@
+---
+# Build + push service images with podman (linux/amd64).
+# Inputs: image_services [{name, dir}], registry_host, repo_root, zone,
+#   podman_push_extra_args.
+- name: Require zone
+  ansible.builtin.assert:
+    that: zone | length > 0
+    fail_msg: >-
+      Set zone, e.g. -e zone=s241646-at-student-dhbw-mannheim-de.users.dhbw.site
+      (or ZONE env). registry_host defaults to registry.<zone>.
+
+- name: Build service images (linux/amd64)
+  ansible.builtin.command:
+    argv: "{{ ['podman', 'build', '--platform', 'linux/amd64', '-t',
+               registry_host ~ '/' ~ item.name ~ ':latest',
+               repo_root ~ '/' ~ item.dir] }}"
+  changed_when: true
+  loop: "{{ image_services }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Push service images
+  # ponytail: --tls-verify=false default (wildcard cert); override via PODMAN_PUSH_ARGS.
+  ansible.builtin.command:
+    argv: "{{ ['podman', 'push'] + podman_push_extra_args
+              + [registry_host ~ '/' ~ item.name ~ ':latest'] }}"
+  changed_when: true
+  loop: "{{ image_services }}"
+  loop_control:
+    label: "{{ item.name }}"
