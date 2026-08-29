@@ -173,16 +173,3 @@
         tls:
           - hosts:
               - "registry.{{ rfc2136_zone }}"
-
-- name: Configure k3s registry mirror
-  become: true
-  when: k3s_role == 'server'
-  ansible.builtin.copy:
-    dest: /etc/rancher/k3s/registries.yaml
-    mode: "0644"
-    content: |
-      mirrors:
-        "registry.{{ rfc2136_zone }}":
-          endpoint:
-            - "https://registry.{{ rfc2136_zone }}"
-  notify: Restart k3s
