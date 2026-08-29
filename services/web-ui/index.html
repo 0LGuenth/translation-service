@@ -9,6 +9,14 @@
 
 <body>
   <div class="container">
+    <div class="toolbar">
+      <div class="lang-group">
+        <select id="srcLang" class="language-select" aria-label="Quellsprache"></select>
+        <button id="swapButton" class="swap-button" type="button">⇄</button>
+        <select id="tgtLang" class="language-select" aria-label="Zielsprache"></select>
+      </div>
+    </div>
+
     <div class="workspace">
       <div class="panel-box">
         <textarea id="inputText" placeholder="Text hier eingeben oder einfügen"></textarea>
@@ -31,6 +39,8 @@
   <script>
     const $ = id => document.getElementById(id);
 
+    const src = $('srcLang');
+    const tgt = $('tgtLang');
     const input = $('inputText');
     const result = $('result');
     const status = $('status');
@@ -40,10 +50,160 @@
       ? 'http://localhost:8000'
       : location.origin;
 
+    const fallbackPairs = [
+      { src_lang: 'de', tgt_lang: 'en' },
+      { src_lang: 'en', tgt_lang: 'de' }
+    ];
+
+    let names = {
+      de: 'German',
+      en: 'English'
+    };
+
+    let pairs = fallbackPairs;
+    let pairKeys = new Set();
+
+
+    const hasName = code =>
+      names[code] &&
+      names[code].trim().toLowerCase() !== code.toLowerCase();
+
+    const name = code =>
+      names[code] || code;
+
+    const key = (source, target) =>
+      `${source}-${target}`;
+
+    const supported = (source, target) =>
+      pairKeys.has(key(source, target));
+
 
     function setStatus(message, type = '') {
       status.textContent = message;
       status.className = `status${type ? ` ${type}` : ''}`;
+    }
+
+
+    function sources() {
+      return [...new Set(
+        pairs.map(p => p.src_lang)
+      )].sort((a, b) => name(a).localeCompare(name(b), 'de'));
+    }
+
+
+    function targets(source) {
+      return [...new Set(
+        pairs
+          .filter(p => !source || p.src_lang === source)
+          .map(p => p.tgt_lang)
+      )].sort((a, b) => name(a).localeCompare(name(b), 'de'));
+    }
+
+
+    function render(select, codes, selected = '') {
+      select.innerHTML =
+        '<option value="">Bitte auswählen</option>' +
+        codes.map(code =>
+          `<option value="${code}">${name(code)}</option>`
+        ).join('');
+
+      if (codes.includes(selected)) {
+        select.value = selected;
+      }
+    }
+
+
+    function updateOptions() {
+      const oldSrc = src.value;
+      const oldTgt = tgt.value;
+
+      render(src, sources(), oldSrc);
+      render(tgt, targets(src.value), oldTgt);
+    }
+
+
+    function setPairs(allPairs) {
+      pairs = allPairs.filter(p =>
+        p?.src_lang &&
+        p?.tgt_lang &&
+        p.src_lang !== p.tgt_lang &&
+        hasName(p.src_lang) &&
+        hasName(p.tgt_lang)
+      );
+
+      if (!pairs.length) {
+        pairs = fallbackPairs;
+      }
+
+      pairKeys = new Set(
+        pairs.map(p => key(p.src_lang, p.tgt_lang))
+      );
+
+      updateOptions();
+
+      if (sources().includes('de')) {
+        src.value = 'de';
+        render(tgt, targets('de'), 'en');
+      }
+    }
+
+
+    async function loadConfig() {
+      try {
+        const [nameResponse, pairResponse] = await Promise.all([
+          fetch('languages.json'),
+          fetch('language_pairs.json')
+        ]);
+
+        if (!nameResponse.ok || !pairResponse.ok) {
+          throw new Error();
+        }
+
+        names = await nameResponse.json();
+
+        const data = await pairResponse.json();
+
+        setPairs(
+          Array.isArray(data.pairs)
+            ? data.pairs
+            : []
+        );
+
+      } catch {
+        setPairs(fallbackPairs);
+
+        setStatus(
+          'Sprachkonfiguration konnte nicht geladen werden.',
+          'error'
+        );
+      }
+    }
+
+
+    function selectionChanged() {
+      updateOptions();
+    }
+
+
+    function swap() {
+      const oldSrc = src.value;
+      const oldTgt = tgt.value;
+
+      if (!oldSrc || !oldTgt) return;
+
+      if (!supported(oldTgt, oldSrc)) {
+        setStatus(
+          'Umgekehrtes Sprachpaar ist nicht verfügbar.',
+          'info'
+        );
+        return;
+      }
+
+      src.value = oldTgt;
+      updateOptions();
+      tgt.value = oldSrc;
+
+      selectionChanged();
     }
 
 
@@ -53,6 +213,13 @@
       if (!text) {
         return setStatus(
           'Bitte geben Sie einen Text ein.',
+          'error'
+        );
+      }
+
+      if (!src.value || !tgt.value) {
+        return setStatus(
+          'Bitte Sprachpaar auswählen.',
           'error'
         );
       }
@@ -70,8 +237,8 @@
           },
           body: JSON.stringify({
             text,
-            src_lang: 'de',
-            tgt_lang: 'en'
+            src_lang: src.value,
+            tgt_lang: tgt.value
           })
         });
 
@@ -105,7 +272,12 @@
     }
 
 
+    src.addEventListener('change', selectionChanged);
+    tgt.addEventListener('change', selectionChanged);
+    $('swapButton').addEventListener('click', swap);
     translateBtn.addEventListener('click', translate);
+
+    loadConfig().then(selectionChanged);
   </script>
 </body>
 </html>
