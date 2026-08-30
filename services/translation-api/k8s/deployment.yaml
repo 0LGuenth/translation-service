@@ -63,9 +63,9 @@ spec:
               value: "translation-errors"
             - name: KAFKA_WRITE_TIMEOUT
               value: "2s"
-            # OTLP gRPC endpoint for traces; unset = tracing disabled (no-op)
+            # OTLP traces endpoint (unset = disabled). Cross-namespace FQDN for Tempo.
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "grafana-tempo:4317"
+              value: "grafana-tempo.translate-platform.svc.cluster.local:4317"
           resources:
             requests:
               cpu: "100m"
