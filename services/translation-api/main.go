@@ -1,9 +1,7 @@
 // Translation API — Go HTTP gateway.
 //
 // Mirrors PDF gridflex-api (slides 13–28): /translate plus /health and /ready
-// for k8s probes. Translation is delegated to TRANSLATION_LLM_URL. Every
-// request is published as a translationEvent to Kafka (best-effort, async) so
-// the streaming pipeline can build analytics off it.
+// for k8s probes. Translation is delegated to TRANSLATION_LLM_URL.
 package main
 
 import (
@@ -23,12 +21,21 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 	"unicode/utf8"
 
 	"github.com/segmentio/kafka-go"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type translateReq struct {
@@ -391,7 +398,99 @@ type appConfig struct {
 	demoUserID     string
 }
 
-func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appConfig) http.HandlerFunc {
+type metricsRecorder struct {
+	mu       sync.Mutex
+	requests map[metricKey]int64
+	latency  map[metricKey]latencyStats
+}
+
+type metricKey struct {
+	Status    string
+	SrcLang   string
+	TgtLang   string
+	ErrorType string
+}
+
+type latencyStats struct {
+	Count int64
+	SumMs float64
+}
+
+func newMetricsRecorder() *metricsRecorder {
+	return &metricsRecorder{
+		requests: map[metricKey]int64{},
+		latency:  map[metricKey]latencyStats{},
+	}
+}
+
+func (m *metricsRecorder) Record(event translationEvent) {
+	if m == nil {
+		return
+	}
+	key := metricKey{
+		Status:    event.Status,
+		SrcLang:   event.SrcLang,
+		TgtLang:   event.TgtLang,
+		ErrorType: event.ErrorType,
+	}
+	if key.ErrorType == "" {
+		key.ErrorType = "none"
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.requests[key]++
+	stats := m.latency[key]
+	stats.Count++
+	stats.SumMs += float64(event.LatencyMsTotal)
+	m.latency[key] = stats
+}
+
+func (m *metricsRecorder) Handler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "GET only"})
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+
+		m.mu.Lock()
+		defer m.mu.Unlock()
+
+		fmt.Fprintln(w, "# HELP translation_requests_total Number of translation requests by status and language pair.")
+		fmt.Fprintln(w, "# TYPE translation_requests_total counter")
+		for key, value := range m.requests {
+			fmt.Fprintf(w, "translation_requests_total{%s} %d\n", metricLabels(key), value)
+		}
+
+		fmt.Fprintln(w, "# HELP translation_request_latency_ms_total Total request latency in milliseconds.")
+		fmt.Fprintln(w, "# TYPE translation_request_latency_ms_total counter")
+		for key, stats := range m.latency {
+			fmt.Fprintf(w, "translation_request_latency_ms_total{%s} %.0f\n", metricLabels(key), stats.SumMs)
+		}
+
+		fmt.Fprintln(w, "# HELP translation_request_latency_ms_count Count of latency observations.")
+		fmt.Fprintln(w, "# TYPE translation_request_latency_ms_count counter")
+		for key, stats := range m.latency {
+			fmt.Fprintf(w, "translation_request_latency_ms_count{%s} %d\n", metricLabels(key), stats.Count)
+		}
+	}
+}
+
+func metricLabels(key metricKey) string {
+	return strings.Join([]string{
+		`status="` + prometheusEscape(key.Status) + `"`,
+		`src_lang="` + prometheusEscape(key.SrcLang) + `"`,
+		`tgt_lang="` + prometheusEscape(key.TgtLang) + `"`,
+		`language_pair="` + prometheusEscape(key.SrcLang+"-"+key.TgtLang) + `"`,
+		`error_type="` + prometheusEscape(key.ErrorType) + `"`,
+	}, ",")
+}
+
+func prometheusEscape(value string) string {
+	return strings.Trim(strconv.Quote(value), `"`)
+}
+
+func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appConfig, metrics *metricsRecorder) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqID := requestID(r)
 		start := time.Now()
@@ -405,6 +504,7 @@ func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appCon
 		var in translateReq
 		if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 			event := newEvent(reqID, source, userHash, in, "error", "", start, 0, "invalid_json")
+			metrics.Record(event)
 			publishAsync(pub, log, event)
 			writeJSON(w, http.StatusBadRequest, errorResp{Error: "invalid JSON", ReqID: reqID})
 			return
@@ -415,6 +515,7 @@ func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appCon
 		in.Src = source
 		if err := validate(in, cfg.supportedPairs); err != nil {
 			event := newEvent(reqID, source, userHash, in, "error", "", start, 0, "validation_error")
+			metrics.Record(event)
 			publishAsync(pub, log, event)
 			writeJSON(w, http.StatusBadRequest, errorResp{Error: err.Error(), ReqID: reqID})
 			return
@@ -429,6 +530,7 @@ func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appCon
 		if err != nil {
 			statusCode, errorType := statusAndType(err)
 			event := newEvent(reqID, source, userHash, in, "error", "", start, translateLatency, errorType)
+			metrics.Record(event)
 			publishAsync(pub, log, event)
 			log.Error("translate failed",
 				"req_id", reqID,
@@ -444,6 +546,7 @@ func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appCon
 		out.LatencyMs = time.Since(start).Milliseconds()
 		out.ReqID = reqID
 		event := newEvent(reqID, source, userHash, in, "success", out.Model, start, translateLatency, "")
+		metrics.Record(event)
 		publishAsync(pub, log, event)
 		log.Info("translate succeeded",
 			"req_id", reqID,
@@ -584,8 +687,44 @@ func cleanToken(value string, maxLen int) string {
 	return value
 }
 
+func setupTracing(ctx context.Context, log *slog.Logger) func(context.Context) error {
+	endpoint := strings.TrimSpace(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"))
+	if endpoint == "" {
+		return func(context.Context) error { return nil }
+	}
+
+	exporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint(endpoint),
+		otlptracegrpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Warn("otel exporter disabled", "endpoint", endpoint, "err", err)
+		return func(context.Context) error { return nil }
+	}
+
+	provider := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName("translation-api"),
+		)),
+	)
+	otel.SetTracerProvider(provider)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	log.Info("otel tracing enabled", "endpoint", endpoint)
+	return provider.Shutdown
+}
+
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	shutdownTracing := setupTracing(context.Background(), log)
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := shutdownTracing(ctx); err != nil {
+			log.Warn("otel shutdown failed", "err", err)
+		}
+	}()
 	addr := ":" + cmp.Or(os.Getenv("PORT"), "8000")
 	url := os.Getenv("TRANSLATION_LLM_URL")
 	if url == "" {
@@ -609,17 +748,19 @@ func main() {
 		supportedPairs: parseSupportedPairs(os.Getenv("SUPPORTED_PAIRS")),
 		demoUserID:     cmp.Or(os.Getenv("DEMO_USER_ID"), "demo-user"),
 	}
+	metrics := newMetricsRecorder()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
 	mux.HandleFunc("/ready", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ready"}) })
+	mux.HandleFunc("/metrics", metrics.Handler())
 	mux.HandleFunc("/languages", handleLanguages(cfg))
 	mux.HandleFunc("/loaded-pairs", handleLoadedPairs(url))
-	mux.HandleFunc("/translate", handleTranslate(backend, log, publisher, cfg))
+	mux.HandleFunc("/translate", handleTranslate(backend, log, publisher, cfg, metrics))
 
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           withCORS(mux),
+		Handler:           otelhttp.NewHandler(withCORS(mux), "translation-api"),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
