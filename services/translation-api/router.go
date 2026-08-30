@@ -199,6 +199,27 @@ func (r *router) pick(src, tgt string) (*llmPod, string) {
 	return pickByLoad(r.shortlist(pair, shortlistK)), "affinity"
 }
 
+// backendAddrs returns a snapshot of the current backend addrs (host:port).
+// Same locking as pick(); the returned slice is the caller's to keep.
+func (r *router) backendAddrs() []string {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	out := make([]string, len(r.backends))
+	for i, b := range r.backends {
+		out[i] = b.addr
+	}
+	return out
+}
+
+// pickAddr returns the addr pick(src,tgt) would route to, or "" if no backends.
+func (r *router) pickAddr(src, tgt string) string {
+	pod, _ := r.pick(src, tgt)
+	if pod == nil {
+		return ""
+	}
+	return pod.addr
+}
+
 // pickByLoad is power-of-two-choices: the lower-inflight of two random
 // candidates. Falls back to the sole/zero candidate.
 func pickByLoad(candidates []*llmPod) *llmPod {

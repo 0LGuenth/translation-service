@@ -585,41 +585,102 @@ func handleLanguages(cfg appConfig) http.HandlerFunc {
 	}
 }
 
-func handleLoadedPairs(llmURL string) http.HandlerFunc {
+// handleLoadedPairs reports cluster-wide model status: loaded/loading pairs are
+// the union across all pods (failed pods skipped); requested_pair is queried
+// from the single pod pick() would route to.
+func handleLoadedPairs(rt *router) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "GET only"})
 			return
 		}
-		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-		defer cancel()
-		statusURL := llmURL + "/model-status"
-		if r.URL.RawQuery != "" {
-			statusURL += "?" + r.URL.RawQuery
+
+		// Fan out to all pods. ponytail: unbounded, fine for a handful of replicas.
+		loaded := map[string]languagePairResp{}
+		loading := map[string]languagePairResp{}
+		var mu sync.Mutex
+		var wg sync.WaitGroup
+		for _, addr := range rt.backendAddrs() {
+			wg.Add(1)
+			go func(addr string) {
+				defer wg.Done()
+				ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+				defer cancel()
+				ps, err := fetchModelStatus(ctx, addr, "")
+				if err != nil {
+					return // tolerate a single pod being unreachable
+				}
+				mu.Lock()
+				for _, p := range ps.LoadedPairs {
+					loaded[pairKey(p.SrcLang, p.TgtLang)] = p
+				}
+				for _, p := range ps.LoadingPairs {
+					loading[pairKey(p.SrcLang, p.TgtLang)] = p
+				}
+				mu.Unlock()
+			}(addr)
 		}
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, statusURL, nil)
-		if err != nil {
-			writeJSON(w, http.StatusBadGateway, errorResp{Error: "failed to create upstream request"})
-			return
+		wg.Wait()
+
+		// Zero backends → empty (not error); sortPairs yields [] not null.
+		out := loadedPairsResp{
+			LoadedPairs:  sortPairs(loaded),
+			LoadingPairs: sortPairs(loading),
 		}
-		resp, err := (&http.Client{}).Do(req)
-		if err != nil {
-			writeJSON(w, http.StatusBadGateway, errorResp{Error: "llm model status unavailable"})
-			return
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusOK {
-			body, _ := io.ReadAll(resp.Body)
-			writeJSON(w, http.StatusBadGateway, errorResp{Error: strings.TrimSpace(string(body))})
-			return
-		}
-		var out loadedPairsResp
-		if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
-			writeJSON(w, http.StatusBadGateway, errorResp{Error: "invalid llm model status"})
-			return
+
+		// requested_pair: query only the pod the translate would route to.
+		src, tgt := r.URL.Query().Get("src_lang"), r.URL.Query().Get("tgt_lang")
+		if src != "" && tgt != "" {
+			if addr := rt.pickAddr(src, tgt); addr != "" {
+				ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+				defer cancel()
+				if ps, err := fetchModelStatus(ctx, addr, r.URL.RawQuery); err == nil {
+					out.RequestedPair = ps.RequestedPair
+				}
+			}
 		}
 		writeJSON(w, http.StatusOK, out)
 	}
+}
+
+// fetchModelStatus GETs one pod's /model-status, forwarding rawQuery verbatim.
+func fetchModelStatus(ctx context.Context, addr, rawQuery string) (loadedPairsResp, error) {
+	statusURL := "http://" + addr + "/model-status"
+	if rawQuery != "" {
+		statusURL += "?" + rawQuery
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, statusURL, nil)
+	if err != nil {
+		return loadedPairsResp{}, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return loadedPairsResp{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return loadedPairsResp{}, fmt.Errorf("model-status %s: %d", addr, resp.StatusCode)
+	}
+	var out loadedPairsResp
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return loadedPairsResp{}, err
+	}
+	return out, nil
+}
+
+// sortPairs returns the pair set as a stable sorted slice (non-nil so JSON is []).
+func sortPairs(m map[string]languagePairResp) []languagePairResp {
+	out := make([]languagePairResp, 0, len(m))
+	for _, p := range m {
+		out = append(out, p)
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].SrcLang == out[j].SrcLang {
+			return out[i].TgtLang < out[j].TgtLang
+		}
+		return out[i].SrcLang < out[j].SrcLang
+	})
+	return out
 }
 
 func statusAndType(err error) (int, string) {
@@ -775,7 +836,7 @@ func main() {
 	mux.HandleFunc("/ready", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ready"}) })
 	mux.HandleFunc("/metrics", metrics.Handler())
 	mux.HandleFunc("/languages", handleLanguages(cfg))
-	mux.HandleFunc("/loaded-pairs", handleLoadedPairs(url))
+	mux.HandleFunc("/loaded-pairs", handleLoadedPairs(rt))
 	mux.HandleFunc("/translate", handleTranslate(backend, log, publisher, cfg, metrics))
 
 	srv := &http.Server{
