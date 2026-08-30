@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -53,6 +54,27 @@ type translateResp struct {
 type errorResp struct {
 	Error string `json:"error"`
 	ReqID string `json:"req_id,omitempty"`
+}
+
+type languagePairResp struct {
+	SrcLang string `json:"src_lang"`
+	TgtLang string `json:"tgt_lang"`
+}
+
+type languagesResp struct {
+	Pairs []languagePairResp `json:"pairs"`
+}
+
+type requestedPairResp struct {
+	SrcLang string `json:"src_lang"`
+	TgtLang string `json:"tgt_lang"`
+	State   string `json:"state"`
+}
+
+type loadedPairsResp struct {
+	LoadedPairs   []languagePairResp `json:"loaded_pairs"`
+	LoadingPairs  []languagePairResp `json:"loading_pairs"`
+	RequestedPair *requestedPairResp `json:"requested_pair,omitempty"`
 }
 
 type translationEvent struct {
@@ -196,6 +218,20 @@ func (p supportedPairs) allows(src, tgt string) bool {
 	}
 	_, ok := p[pairKey(src, tgt)]
 	return ok
+}
+
+func (p supportedPairs) list() []languagePairResp {
+	out := make([]languagePairResp, 0, len(p))
+	for _, pair := range p {
+		out = append(out, languagePairResp{SrcLang: pair.src, TgtLang: pair.tgt})
+	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].SrcLang == out[j].SrcLang {
+			return out[i].TgtLang < out[j].TgtLang
+		}
+		return out[i].SrcLang < out[j].SrcLang
+	})
+	return out
 }
 
 func pairKey(src, tgt string) string {
@@ -422,6 +458,53 @@ func handleTranslate(b backend, log *slog.Logger, pub eventPublisher, cfg appCon
 	}
 }
 
+func handleLanguages(cfg appConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "GET only"})
+			return
+		}
+		writeJSON(w, http.StatusOK, languagesResp{Pairs: cfg.supportedPairs.list()})
+	}
+}
+
+func handleLoadedPairs(llmURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "GET only"})
+			return
+		}
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+		statusURL := llmURL + "/model-status"
+		if r.URL.RawQuery != "" {
+			statusURL += "?" + r.URL.RawQuery
+		}
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, statusURL, nil)
+		if err != nil {
+			writeJSON(w, http.StatusBadGateway, errorResp{Error: "failed to create upstream request"})
+			return
+		}
+		resp, err := (&http.Client{}).Do(req)
+		if err != nil {
+			writeJSON(w, http.StatusBadGateway, errorResp{Error: "llm model status unavailable"})
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			body, _ := io.ReadAll(resp.Body)
+			writeJSON(w, http.StatusBadGateway, errorResp{Error: strings.TrimSpace(string(body))})
+			return
+		}
+		var out loadedPairsResp
+		if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+			writeJSON(w, http.StatusBadGateway, errorResp{Error: "invalid llm model status"})
+			return
+		}
+		writeJSON(w, http.StatusOK, out)
+	}
+}
+
 func statusAndType(err error) (int, string) {
 	var be *backendError
 	if errors.As(err, &be) {
@@ -530,6 +613,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
 	mux.HandleFunc("/ready", func(w http.ResponseWriter, _ *http.Request) { writeJSON(w, 200, map[string]string{"status": "ready"}) })
+	mux.HandleFunc("/languages", handleLanguages(cfg))
+	mux.HandleFunc("/loaded-pairs", handleLoadedPairs(url))
 	mux.HandleFunc("/translate", handleTranslate(backend, log, publisher, cfg))
 
 	srv := &http.Server{

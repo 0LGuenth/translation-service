@@ -34,6 +34,16 @@
     </div>
 
     <div id="status" class="status" aria-live="polite"></div>
+
+    <div class="model-status-card">
+      <div class="model-status-title">Sprachmodelle</div>
+      <div id="activePairStatus" class="active-pair-status">
+        Modellstatus wird geladen…
+      </div>
+      <div id="loadedPairs">
+        Geladene Sprachpaare werden ermittelt…
+      </div>
+    </div>
   </div>
 
   <script>
@@ -45,6 +55,8 @@
     const result = $('result');
     const status = $('status');
     const translateBtn = $('translateButton');
+    const loadedPairs = $('loadedPairs');
+    const pairStatus = $('activePairStatus');
 
     const API = location.protocol === 'file:'
       ? 'http://localhost:8000'
@@ -73,6 +85,9 @@
 
     const key = (source, target) =>
       `${source}-${target}`;
+
+    const label = pair =>
+      `${name(pair.src_lang)} -> ${name(pair.tgt_lang)}`;
 
     const supported = (source, target) =>
       pairKeys.has(key(source, target));
@@ -180,8 +195,104 @@
     }
 
 
+    function renderLoaded(data) {
+      const valid = list =>
+        (Array.isArray(list) ? list : [])
+          .filter(p =>
+            hasName(p.src_lang) &&
+            hasName(p.tgt_lang)
+          );
+
+      const loaded = valid(data.loaded_pairs);
+      const loading = valid(data.loading_pairs);
+
+      if (!loaded.length && !loading.length) {
+        loadedPairs.textContent =
+          'Noch keine Modelle im Arbeitsspeicher.';
+        return;
+      }
+
+      const parts = [];
+
+      if (loaded.length) {
+        parts.push(
+          `<strong>Geladen (${loaded.length}):</strong> ` +
+          loaded.map(p =>
+            `<span class="pair-badge">${label(p)}</span>`
+          ).join(' ')
+        );
+      }
+
+      if (loading.length) {
+        parts.push(
+          `<strong>Wird geladen:</strong> ` +
+          loading.map(p =>
+            `<span class="pair-badge loading">${label(p)}</span>`
+          ).join(' ')
+        );
+      }
+
+      loadedPairs.innerHTML = parts.join('<br>');
+    }
+
+
+    function renderPairStatus(pair) {
+      if (!pair) {
+        pairStatus.textContent =
+          'Wähle ein Sprachpaar für den Modellstatus.';
+        return;
+      }
+
+      const messages = {
+        loaded: 'Modell ist geladen und sofort bereit.',
+        loading: 'Modell wird gerade geladen.',
+        cached: 'Modell liegt lokal im Cache.',
+        download_required: 'Modell muss zuerst heruntergeladen werden.',
+        unsupported: 'Dieses Sprachpaar wird nicht unterstützt.'
+      };
+
+      pairStatus.textContent =
+        `${label(pair)}: ${messages[pair.state] || 'Modellstatus wird ermittelt…'}`;
+    }
+
+
+    async function refreshModels(pair = null) {
+      try {
+        const query = pair
+          ? `?src_lang=${encodeURIComponent(pair.src_lang)}&tgt_lang=${encodeURIComponent(pair.tgt_lang)}`
+          : '';
+
+        const response = await fetch(`${API}/loaded-pairs${query}`);
+
+        if (!response.ok) throw new Error();
+
+        const data = await response.json();
+
+        renderLoaded(data);
+
+        if (pair) {
+          renderPairStatus(data.requested_pair || pair);
+        }
+
+      } catch {
+        loadedPairs.textContent =
+          'Modellstatus derzeit nicht verfügbar.';
+      }
+    }
+
+
     function selectionChanged() {
       updateOptions();
+
+      if (!src.value || !tgt.value) {
+        renderPairStatus(null);
+        return;
+      }
+
+      refreshModels({
+        src_lang: src.value,
+        tgt_lang: tgt.value
+      });
     }
 
 
@@ -258,6 +369,8 @@
           'success'
         );
 
+        selectionChanged();
+
       } catch (error) {
         result.textContent = 'Fehler';
 
@@ -278,6 +391,7 @@
     translateBtn.addEventListener('click', translate);
 
     loadConfig().then(selectionChanged);
+    setInterval(() => refreshModels(), 5000);
   </script>
 </body>
 </html>
