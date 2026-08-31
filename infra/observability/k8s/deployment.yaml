@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: "docker.io/grafana/grafana-oss:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-credentials
+                  key: admin-user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-credentials
+                  key: admin-password
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+            - name: GF_PANELS_DISABLE_SANITIZE_HTML
+              value: "true"
+            - name: GF_PLUGINS_PLUGIN_ADMIN_ENABLED
+              value: "false"
+          volumeMounts:
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+            - name: bundled-elasticsearch-shadow
+              mountPath: /usr/share/grafana/data/plugins-bundled/elasticsearch
+            - name: dashboard-providers
+              mountPath: /etc/grafana/provisioning/dashboards
+              readOnly: true
+            - name: dashboard-translation
+              mountPath: /var/lib/grafana/dashboards/translation
+              readOnly: true
+            - name: dashboard-kubernetes
+              mountPath: /var/lib/grafana/dashboards/kubernetes
+              readOnly: true
+            - name: dashboard-observability
+              mountPath: /var/lib/grafana/dashboards/observability
+              readOnly: true
+            - name: storage
+              mountPath: /var/lib/grafana
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      volumes:
+        - name: datasources
+          configMap:
+            name: grafana-datasources
+        - name: bundled-elasticsearch-shadow
+          emptyDir: {}
+        - name: dashboard-providers
+          configMap:
+            name: grafana-dashboard-providers
+        - name: dashboard-translation
+          configMap:
+            name: grafana-dashboard-translation-analytics
+        - name: dashboard-kubernetes
+          configMap:
+            name: grafana-dashboard-kubernetes-utilization
+        - name: dashboard-observability
+          configMap:
+            name: grafana-dashboard-observability
+        - name: storage
+          persistentVolumeClaim:
+            claimName: grafana-storage
