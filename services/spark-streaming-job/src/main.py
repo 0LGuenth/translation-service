@@ -379,6 +379,8 @@ def start_gold_stream(df: DataFrame, path: str, checkpoint: str, query_name: str
     return (
         df.writeStream.queryName(query_name)
         .outputMode("update")
+        # Tight trigger so new pairs surface in seconds, not the ~1m default.
+        .trigger(processingTime="15 seconds")
         .option("checkpointLocation", checkpoint)
         .foreachBatch(write_batch)
         .start()
