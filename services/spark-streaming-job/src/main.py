@@ -65,6 +65,7 @@ def build_spark() -> SparkSession:
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
         .config("spark.sql.session.timeZone", "UTC")
+        .config("spark.sql.shuffle.partitions", env("SPARK_SHUFFLE_PARTITIONS", "8"))
         .config("spark.hadoop.fs.s3a.endpoint", env("S3_ENDPOINT", "http://seaweedfs-filer.seaweedfs.svc.cluster.local:8333"))
         .config("spark.hadoop.fs.s3a.path.style.access", "true")
         .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
