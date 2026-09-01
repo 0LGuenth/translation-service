@@ -5,7 +5,7 @@
 - name: Require zone
   ansible.builtin.assert:
     that: zone | length > 0
-    fail_msg: "Set zone, e.g. -e zone=s241646-at-student-dhbw-mannheim-de.users.dhbw.site"
+    fail_msg: "Set zone, e.g. -e zone=s000000-at-student-dhbw-mannheim-de.users.dhbw.site"
 
 - name: Reset manifest file accumulator
   ansible.builtin.set_fact:

@@ -6,7 +6,7 @@
   ansible.builtin.assert:
     that: zone | length > 0
     fail_msg: >-
-      Set zone, e.g. -e zone=s241646-at-student-dhbw-mannheim-de.users.dhbw.site
+      Set zone, e.g. -e zone=s000000-at-student-dhbw-mannheim-de.users.dhbw.site
       (or ZONE env). registry_host defaults to registry.<zone>.
 
 - name: Build service images (linux/amd64)
