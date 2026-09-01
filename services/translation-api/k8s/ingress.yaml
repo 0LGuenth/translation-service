@@ -9,7 +9,7 @@ spec:
     - hosts:
         - translation-api.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
   rules:
-    - host: translation-api.sXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
+    - host: translation-api.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
       http:
         paths:
           # Catch-all; the gateway routes /translate, /health, /ready

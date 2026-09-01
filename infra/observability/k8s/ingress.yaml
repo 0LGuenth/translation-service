@@ -5,9 +5,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - analytics-ui.example.invalid
+        - analytics-ui.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
   rules:
-    - host: analytics-ui.example.invalid
+    - host: analytics-ui.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site
       http:
         paths:
           - path: /
