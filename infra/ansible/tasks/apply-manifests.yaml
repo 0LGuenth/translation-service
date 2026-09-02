@@ -30,7 +30,7 @@
     state: present
     apply: true
     kubeconfig: "{{ kubeconfig_path }}"
-    namespace: "{{ apply_namespace | default(omit, true) }}"
+    namespace: "{{ apply_namespace | default('default', true) }}"
     definition: >-
       {{ lookup('file', item)
          | regex_replace('[A-Za-z0-9]+-at-student-dhbw-mannheim-de\.users\.dhbw\.site', zone)
