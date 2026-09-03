@@ -6,10 +6,13 @@ metadata:
     app: spark-streaming-job
 data:
   SPARK_APP_NAME: translation-spark-streaming-job
-  SPARK_MASTER: "local[*]"
+  SPARK_MASTER: "k8s://https://kubernetes.default.svc"
   SPARK_LOG_LEVEL: "INFO"
   SPARK_PACKAGES: "io.delta:delta-spark_2.12:3.2.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.9,org.apache.hadoop:hadoop-aws:3.3.4"
   JOB_MODE: "stream"
+  SPARK_EXECUTOR_INSTANCES: "2"
+  SPARK_EXECUTOR_CORES: "1"
+  SPARK_EXECUTOR_MEMORY: "1g"
   KAFKA_BOOTSTRAP_SERVERS: "translation-kafka-kafka-bootstrap:9092"
   KAFKA_TOPIC: "translation-events,translation-errors"
   KAFKA_STARTING_OFFSETS: "earliest"

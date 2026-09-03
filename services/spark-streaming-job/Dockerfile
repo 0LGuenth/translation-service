@@ -8,7 +8,11 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 
+# Executors run as `spark` and fetch dependency jars into this workdir, so it
+# must be writable by that user (COPY above created it root-owned).
+RUN chown -R spark /opt/translation/spark-streaming-job
+
 USER spark
 
-ENTRYPOINT ["/opt/spark/bin/spark-submit"]
-CMD ["--master", "local[*]", "/opt/translation/spark-streaming-job/src/main.py"]
+# Keep the base image's /opt/entrypoint.sh: Spark-launched executor pods rely on
+# it to dispatch the "executor" arg. The driver sets its own command in its manifest.

@@ -6,6 +6,8 @@ metadata:
     app: spark-streaming-job
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: spark-streaming-job
@@ -14,6 +16,7 @@ spec:
       labels:
         app: spark-streaming-job
     spec:
+      serviceAccountName: spark
       containers:
         - name: spark-streaming-job
           image: "registry.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/spark-streaming-job:latest"
@@ -26,8 +29,22 @@ spec:
               mkdir -p /tmp/.ivy2
               exec /opt/spark/bin/spark-submit \
                 --master "${SPARK_MASTER}" \
+                --deploy-mode client \
                 --packages "${SPARK_PACKAGES}" \
                 --conf "spark.jars.ivy=/tmp/.ivy2" \
+                --conf "spark.kubernetes.namespace=${POD_NAMESPACE}" \
+                --conf "spark.kubernetes.container.image=${SPARK_KUBERNETES_IMAGE}" \
+                --conf "spark.kubernetes.container.image.pullPolicy=Always" \
+                --conf "spark.kubernetes.authenticate.driver.serviceAccountName=spark" \
+                --conf "spark.kubernetes.executor.podNamePrefix=spark-streaming-job" \
+                --conf "spark.executor.instances=${SPARK_EXECUTOR_INSTANCES}" \
+                --conf "spark.executor.cores=${SPARK_EXECUTOR_CORES}" \
+                --conf "spark.executor.memory=${SPARK_EXECUTOR_MEMORY}" \
+                --conf "spark.driver.host=[${POD_IP}]" \
+                --conf "spark.driver.bindAddress=${POD_IP}" \
+                --conf "spark.driver.port=7078" \
+                --conf "spark.blockManager.port=7079" \
+                --conf "spark.executor.extraJavaOptions=-Djava.net.preferIPv6Addresses=true" \
                 --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
                 --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
                 --conf "spark.hadoop.fs.s3a.endpoint=${S3_ENDPOINT}" \
@@ -47,6 +64,20 @@ spec:
           env:
             - name: HOME
               value: /tmp
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPARK_LOCAL_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SPARK_KUBERNETES_IMAGE
+              value: "registry.sXXXXXXX-at-student-dhbw-mannheim-de.users.dhbw.site/spark-streaming-job:latest"
           resources:
             requests:
               cpu: "500m"

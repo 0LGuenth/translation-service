@@ -1,0 +1,32 @@
+# RBAC for the Spark driver to create/delete executor pods in its namespace.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark
+  labels:
+    app: spark-streaming-job
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: spark-executor
+  labels:
+    app: spark-streaming-job
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "delete", "deletecollection"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spark-executor
+  labels:
+    app: spark-streaming-job
+subjects:
+  - kind: ServiceAccount
+    name: spark
+roleRef:
+  kind: Role
+  name: spark-executor
+  apiGroup: rbac.authorization.k8s.io
