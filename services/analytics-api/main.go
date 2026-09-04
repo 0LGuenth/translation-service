@@ -172,10 +172,24 @@ func (a *app) summary(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusMethodNotAllowed, errorResp{Error: "GET only"})
 		return
 	}
+	// Derive live metrics from the materialised 1m windows (last hour) so they
+	// reflect the full serving table, not just the latest micro-batch. Latency
+	// is weighted by request_count; requests_per_minute is the newest window.
 	rows, err := a.db.Query(r.Context(), `
-		SELECT metric_key, metric_value, updated_at
-		FROM global_live_metrics
-		WHERE metric_key IN ('requests_total', 'latest_request_count_1m', 'requests_per_minute', 'avg_latency_ms', 'error_rate')
+		WITH windows AS (
+		    SELECT window_start, request_count, error_count, avg_latency_ms_total, updated_at
+		    FROM language_pair_windows
+		    WHERE window_type = '1m' AND window_start >= now() - interval '1 hour'
+		)
+		SELECT
+		    COALESCE(SUM(request_count), 0)::float8,
+		    COALESCE((SELECT SUM(request_count) FROM windows
+		              WHERE window_start = (SELECT MAX(window_start) FROM windows)), 0)::float8,
+		    COALESCE(SUM(avg_latency_ms_total * request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL)
+		             / NULLIF(SUM(request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL), 0), 0)::float8,
+		    CASE WHEN SUM(request_count) > 0 THEN SUM(error_count)::float8 / SUM(request_count)::float8 ELSE 0 END,
+		    COALESCE(MAX(updated_at), 'epoch'::timestamptz)
+		FROM windows
 	`)
 	if err != nil {
 		a.dbError(w, err)
@@ -184,37 +198,19 @@ func (a *app) summary(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	out := summaryResp{}
-	var latest time.Time
-	for rows.Next() {
-		var key string
-		var value float64
+	if rows.Next() {
 		var updated time.Time
-		if err := rows.Scan(&key, &value, &updated); err != nil {
+		if err := rows.Scan(&out.TotalRequests, &out.RequestsPerMinute, &out.AvgLatencyMs, &out.ErrorRate, &updated); err != nil {
 			a.dbError(w, err)
 			return
 		}
-		switch key {
-		case "requests_total", "latest_request_count_1m":
-			if out.TotalRequests == 0 {
-				out.TotalRequests = value
-			}
-		case "requests_per_minute":
-			out.RequestsPerMinute = value
-		case "avg_latency_ms":
-			out.AvgLatencyMs = value
-		case "error_rate":
-			out.ErrorRate = value
-		}
-		if updated.After(latest) {
-			latest = updated
+		if updated.Unix() > 0 {
+			out.UpdatedAt = updated.UTC().Format(time.RFC3339)
 		}
 	}
 	if err := rows.Err(); err != nil {
 		a.dbError(w, err)
 		return
-	}
-	if !latest.IsZero() {
-		out.UpdatedAt = latest.UTC().Format(time.RFC3339)
 	}
 	writeJSON(w, http.StatusOK, out)
 }
@@ -228,8 +224,10 @@ func (a *app) languagePairs(w http.ResponseWriter, r *http.Request) {
 	rows, err := a.db.Query(r.Context(), `
 		SELECT language_pair,
 		       SUM(request_count)::bigint AS request_count,
-		       COALESCE(AVG(avg_latency_ms_total), 0) AS avg_latency_ms_total,
-		       COALESCE(AVG(avg_latency_ms_translate), 0) AS avg_latency_ms_translate,
+		       COALESCE(SUM(avg_latency_ms_total * request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL)
+		                / NULLIF(SUM(request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL), 0), 0) AS avg_latency_ms_total,
+		       COALESCE(SUM(avg_latency_ms_translate * request_count) FILTER (WHERE avg_latency_ms_translate IS NOT NULL)
+		                / NULLIF(SUM(request_count) FILTER (WHERE avg_latency_ms_translate IS NOT NULL), 0), 0) AS avg_latency_ms_translate,
 		       SUM(error_count)::bigint AS error_count,
 		       CASE WHEN SUM(request_count) > 0 THEN SUM(error_count)::float / SUM(request_count)::float ELSE 0 END AS error_rate
 		FROM language_pair_windows
@@ -262,7 +260,9 @@ func (a *app) languagePairs(w http.ResponseWriter, r *http.Request) {
 
 func (a *app) latency(w http.ResponseWriter, r *http.Request) {
 	a.windowSeries(w, r, `
-		SELECT window_start, window_end, COALESCE(AVG(avg_latency_ms_total), 0) AS avg_latency_ms_total
+		SELECT window_start, window_end,
+		       COALESCE(SUM(avg_latency_ms_total * request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL)
+		                / NULLIF(SUM(request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL), 0), 0) AS avg_latency_ms_total
 		FROM language_pair_windows
 		WHERE window_type = '1m'
 		  AND window_start >= now() - interval '1 hour'
@@ -288,7 +288,8 @@ func (a *app) timeseries(w http.ResponseWriter, r *http.Request) {
 	a.windowSeries(w, r, `
 		SELECT window_start, window_end,
 		       SUM(request_count)::bigint AS request_count,
-		       COALESCE(AVG(avg_latency_ms_total), 0) AS avg_latency_ms_total,
+		       COALESCE(SUM(avg_latency_ms_total * request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL)
+		                / NULLIF(SUM(request_count) FILTER (WHERE avg_latency_ms_total IS NOT NULL), 0), 0) AS avg_latency_ms_total,
 		       SUM(error_count)::bigint AS error_count,
 		       CASE WHEN SUM(request_count) > 0 THEN SUM(error_count)::float / SUM(request_count)::float ELSE 0 END AS error_rate
 		FROM language_pair_windows

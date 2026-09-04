@@ -106,10 +106,7 @@ func TestReadyReportsDatabaseFailure(t *testing.T) {
 func TestSummary(t *testing.T) {
 	now := time.Date(2026, 8, 16, 12, 0, 0, 0, time.UTC)
 	rows := &fakeRows{values: [][]any{
-		{"requests_total", 42.0, now},
-		{"requests_per_minute", 7.0, now},
-		{"avg_latency_ms", 123.0, now},
-		{"error_rate", 0.125, now},
+		{42.0, 7.0, 123.0, 0.125, now},
 	}}
 	req := httptest.NewRequest(http.MethodGet, "/metrics/summary", nil)
 	rec := httptest.NewRecorder()
