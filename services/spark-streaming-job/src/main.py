@@ -161,15 +161,18 @@ def normalize_event_columns(parsed: DataFrame) -> DataFrame:
 
 
 def with_validation(df: DataFrame) -> DataFrame:
+    # NULL fails the three-valued rlike/isin checks silently, so guard NULL
+    # explicitly; otherwise src_lang=null etc. would slip through as valid.
     error_text = F.concat_ws(
         ",",
         F.when(F.col("req_id").isNull() | (F.length(F.col("req_id")) == 0), "missing_req_id"),
         F.when(F.col("event_time").isNull(), "invalid_event_ts"),
         F.when(F.col("user_id_hashed").isNull() | (F.length(F.col("user_id_hashed")) == 0), "missing_user_id_hashed"),
-        F.when(~F.col("src_lang").rlike("^[a-z]{2,5}$"), "invalid_src_lang"),
-        F.when(~F.col("tgt_lang").rlike("^[a-z]{2,5}$"), "invalid_tgt_lang"),
-        F.when(~F.col("status").isin("success", "error"), "invalid_status"),
+        F.when(F.col("src_lang").isNull() | ~F.col("src_lang").rlike("^[a-z]{2,5}$"), "invalid_src_lang"),
+        F.when(F.col("tgt_lang").isNull() | ~F.col("tgt_lang").rlike("^[a-z]{2,5}$"), "invalid_tgt_lang"),
+        F.when(F.col("status").isNull() | ~F.col("status").isin("success", "error"), "invalid_status"),
         F.when(F.col("char_count").isNull() | (F.col("char_count") < 0), "invalid_char_count"),
+        F.when(F.col("latency_ms_total") < 0, "invalid_latency"),
     )
     return df.withColumn("validation_errors", error_text)
 
@@ -290,12 +293,6 @@ def upsert_language_pair_windows(rows: Sequence, window_type: str) -> None:
           p95_latency_ms_total = EXCLUDED.p95_latency_ms_total,
           updated_at = now()
     """
-    metrics_sql = """
-        INSERT INTO global_live_metrics (metric_key, metric_value, updated_at)
-        VALUES (%s, %s, now())
-        ON CONFLICT (metric_key)
-        DO UPDATE SET metric_value = EXCLUDED.metric_value, updated_at = now()
-    """
     values = [
         (
             window_type,
@@ -314,21 +311,6 @@ def upsert_language_pair_windows(rows: Sequence, window_type: str) -> None:
     with psycopg.connect(postgres_conninfo()) as conn:
         with conn.cursor() as cur:
             cur.executemany(sql, values)
-            if window_type == "1m":
-                total_requests = sum(value[4] for value in values)
-                total_errors = sum(value[7] for value in values)
-                weighted_latency = sum((value[5] or 0) * value[4] for value in values)
-                avg_latency = weighted_latency / total_requests if total_requests else 0
-                error_rate = total_errors / total_requests if total_requests else 0
-                cur.executemany(
-                    metrics_sql,
-                    [
-                        ("latest_request_count_1m", total_requests),
-                        ("requests_per_minute", total_requests),
-                        ("avg_latency_ms", avg_latency),
-                        ("error_rate", error_rate),
-                    ],
-                )
 
 
 def upsert_user_alerts(rows: Sequence) -> None:
@@ -364,12 +346,44 @@ def upsert_user_alerts(rows: Sequence) -> None:
             cur.executemany(sql, values)
 
 
+def gold_merge_keys(postgres_kind: str | None) -> list[str]:
+    if postgres_kind in {"1m", "5m"}:
+        return ["window_start", "window_end", "language_pair"]
+    if postgres_kind == "user_alerts":
+        return ["window_start", "window_end", "user_id_hashed"]
+    return []
+
+
+def merge_gold_delta(output: DataFrame, path: str, keys: list[str]) -> None:
+    # Idempotent upsert: keeps one current row per window key instead of
+    # appending, so re-processed windows overwrite rather than double-count.
+    from delta.tables import DeltaTable
+
+    spark = output.sparkSession
+    if not DeltaTable.isDeltaTable(spark, path):
+        output.write.format("delta").mode("append").partitionBy("date").save(path)
+        return
+    cond = " AND ".join(f"t.{k} = s.{k}" for k in keys)
+    (
+        DeltaTable.forPath(spark, path)
+        .alias("t")
+        .merge(output.alias("s"), cond)
+        .whenMatchedUpdateAll()
+        .whenNotMatchedInsertAll()
+        .execute()
+    )
+
+
 def start_gold_stream(df: DataFrame, path: str, checkpoint: str, query_name: str, postgres_kind: str | None = None):
     def write_batch(batch_df: DataFrame, batch_id: int) -> None:
-        if batch_df.rdd.isEmpty():
+        if batch_df.isEmpty():
             return
         output = batch_df.withColumn("batch_id", F.lit(batch_id))
-        output.write.format("delta").mode("append").partitionBy("date").save(path)
+        keys = gold_merge_keys(postgres_kind)
+        if keys:
+            merge_gold_delta(output, path, keys)
+        else:
+            output.write.format("delta").mode("append").partitionBy("date").save(path)
         if env_bool("POSTGRES_SINK_ENABLED", True) and postgres_kind:
             rows = output.collect()
             if postgres_kind in {"1m", "5m"}:
