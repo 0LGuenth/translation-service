@@ -1,0 +1,22 @@
+# Autoscale the model service between 3 and 6 pods on CPU load. Scale-up is not
+# instant: a new pod starts with a cold model cache and lazy-loads on first use.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: translation-llm
+  labels:
+    app: translation-llm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: translation-llm
+  minReplicas: 3
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
