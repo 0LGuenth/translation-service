@@ -37,7 +37,11 @@ spec:
                 --conf "spark.kubernetes.container.image.pullPolicy=Always" \
                 --conf "spark.kubernetes.authenticate.driver.serviceAccountName=spark" \
                 --conf "spark.kubernetes.executor.podNamePrefix=spark-streaming-job" \
-                --conf "spark.executor.instances=${SPARK_EXECUTOR_INSTANCES}" \
+                --conf "spark.dynamicAllocation.enabled=true" \
+                --conf "spark.dynamicAllocation.shuffleTracking.enabled=true" \
+                --conf "spark.dynamicAllocation.minExecutors=${SPARK_MIN_EXECUTORS}" \
+                --conf "spark.dynamicAllocation.maxExecutors=${SPARK_MAX_EXECUTORS}" \
+                --conf "spark.dynamicAllocation.initialExecutors=${SPARK_MIN_EXECUTORS}" \
                 --conf "spark.executor.cores=${SPARK_EXECUTOR_CORES}" \
                 --conf "spark.executor.memory=${SPARK_EXECUTOR_MEMORY}" \
                 --conf "spark.driver.host=[${POD_IP}]" \
