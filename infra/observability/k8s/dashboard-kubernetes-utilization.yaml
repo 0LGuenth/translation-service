@@ -111,6 +111,39 @@ data:
           ],
           "fieldConfig": { "defaults": { "unit": "bytes", "decimals": 1 }, "overrides": [] },
           "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "Laufende Pods je Service (Auto-Scaling)",
+          "description": "Anzahl laufender Pods je Service über die Zeit - zeigt HPA-Scale-up/down und die Spark-Executor-Skalierung. Abgeleitet aus cadvisor (distinct pod).",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 25 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            { "refId": "A", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"web-ui-.*\"}))", "legendFormat": "web-ui" },
+            { "refId": "B", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"analytics-api-.*\"}))", "legendFormat": "analytics-api" },
+            { "refId": "C", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"translation-api-.*\"}))", "legendFormat": "translation-api" },
+            { "refId": "D", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"translation-llm-.*\"}))", "legendFormat": "translation-llm" },
+            { "refId": "E", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"spark-streaming-job.*exec.*\"}))", "legendFormat": "spark-executors" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "min": 0, "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 10 } }, "overrides": [] },
+          "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } }
+        },
+        {
+          "id": 8,
+          "type": "stat",
+          "title": "Aktuelle Pods je Service",
+          "gridPos": { "h": 6, "w": 24, "x": 0, "y": 33 },
+          "datasource": { "type": "prometheus", "uid": "kubernetes-prometheus" },
+          "targets": [
+            { "refId": "A", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"web-ui-.*\"}))", "legendFormat": "web-ui" },
+            { "refId": "B", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"analytics-api-.*\"}))", "legendFormat": "analytics-api" },
+            { "refId": "C", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"translation-api-.*\"}))", "legendFormat": "translation-api" },
+            { "refId": "D", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"translation-llm-.*\"}))", "legendFormat": "translation-llm" },
+            { "refId": "E", "expr": "count(count by (pod) (container_cpu_usage_seconds_total{namespace=\"default\", container!=\"\", container!=\"POD\", image!=\"\", pod=~\"spark-streaming-job.*exec.*\"}))", "legendFormat": "spark-executors" }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] } }, "overrides": [] },
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "orientation": "horizontal", "textMode": "value_and_name", "colorMode": "value" }
         }
       ]
     }
