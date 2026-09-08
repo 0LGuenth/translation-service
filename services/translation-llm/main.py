@@ -180,7 +180,28 @@ async def lifespan(_app: FastAPI):
     yield
 
 
+def _setup_tracing(fastapi_app: FastAPI) -> None:
+    # Export spans to Tempo when OTEL_EXPORTER_OTLP_ENDPOINT is set; the FastAPI
+    # instrumentor continues the trace propagated by the gateway (W3C traceparent).
+    if not os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "").strip():
+        return
+    from opentelemetry import trace
+    from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+    provider = TracerProvider(
+        resource=Resource.create({"service.name": os.getenv("OTEL_SERVICE_NAME", "translation-llm")})
+    )
+    provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+    trace.set_tracer_provider(provider)
+    FastAPIInstrumentor.instrument_app(fastapi_app)
+
+
 app = FastAPI(lifespan=lifespan)
+_setup_tracing(app)
 
 
 @app.get("/model-status")

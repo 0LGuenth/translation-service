@@ -9,3 +9,9 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 pydantic==2.9.2
 nltk==3.9.1
+# opentelemetry-instrumentation imports pkg_resources, which needs setuptools
+# (not bundled in the slim python base image).
+setuptools==75.1.0
+opentelemetry-sdk==1.27.0
+opentelemetry-exporter-otlp-proto-grpc==1.27.0
+opentelemetry-instrumentation-fastapi==0.48b0

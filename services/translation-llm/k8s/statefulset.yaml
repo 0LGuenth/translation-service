@@ -32,6 +32,11 @@ spec:
             # Cap loaded pipelines to fit the 3Gi limit (~1Gi base + ~200Mi/model).
             - name: MAX_MODELS
               value: "6"
+            # Continue the gateway's trace; export spans to Tempo.
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://grafana-tempo.translate-platform.svc.cluster.local:4317"
+            - name: OTEL_SERVICE_NAME
+              value: "translation-llm"
           resources:
             requests:
               # OPUS-MT inference on CPU

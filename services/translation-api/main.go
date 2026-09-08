@@ -813,7 +813,7 @@ func main() {
 		os.Exit(1)
 	}
 	backendTimeout := envDuration("TRANSLATION_BACKEND_TIMEOUT", 120*time.Second)
-	backend := &httpBackend{router: rt, client: &http.Client{Timeout: backendTimeout}, log: log}
+	backend := &httpBackend{router: rt, client: &http.Client{Timeout: backendTimeout, Transport: otelhttp.NewTransport(http.DefaultTransport)}, log: log}
 	publisher, err := newEventPublisher(log)
 	if err != nil {
 		log.Error("kafka config invalid", "err", err)
