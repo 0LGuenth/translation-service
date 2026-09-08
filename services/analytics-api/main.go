@@ -11,10 +11,18 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type db interface {
@@ -82,8 +90,42 @@ type errorResp struct {
 	Error string `json:"error"`
 }
 
+func setupTracing(ctx context.Context, log *slog.Logger) func(context.Context) error {
+	endpoint := strings.TrimSpace(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"))
+	if endpoint == "" {
+		return func(context.Context) error { return nil }
+	}
+	exporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint(endpoint),
+		otlptracegrpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Warn("otel exporter disabled", "endpoint", endpoint, "err", err)
+		return func(context.Context) error { return nil }
+	}
+	provider := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName("analytics-api"),
+		)),
+	)
+	otel.SetTracerProvider(provider)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	log.Info("otel tracing enabled", "endpoint", endpoint)
+	return provider.Shutdown
+}
+
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	shutdownTracing := setupTracing(context.Background(), log)
+	defer func() {
+		sctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := shutdownTracing(sctx); err != nil {
+			log.Warn("otel shutdown failed", "err", err)
+		}
+	}()
 	ctx := context.Background()
 
 	pool, err := pgxpool.New(ctx, databaseURL())
@@ -97,7 +139,7 @@ func main() {
 	a := &app{db: database, log: log}
 	srv := &http.Server{
 		Addr:              ":" + cmp.Or(os.Getenv("PORT"), "8001"),
-		Handler:           withCORS(a.routes()),
+		Handler:           otelhttp.NewHandler(withCORS(a.routes()), "analytics-api"),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

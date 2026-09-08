@@ -22,6 +22,10 @@ spec:
           env:
             - name: PORT
               value: "8001"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "grafana-tempo.translate-platform.svc.cluster.local:4317"
+            - name: OTEL_SERVICE_NAME
+              value: "analytics-api"
             - name: POSTGRES_HOST
               value: "analytics-db"
             - name: POSTGRES_PORT
