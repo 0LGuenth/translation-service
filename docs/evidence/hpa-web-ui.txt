@@ -1,0 +1,80 @@
+===== WEB-UI AUTOSCALING TEST =====
+2026-09-09T19:32:01Z
+--- BASELINE ---
+NAME     REFERENCE           TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 2%/70%   2         5         2          16m
+NAME                     CPU(cores)   MEMORY(bytes)   
+web-ui-bf457bfdd-9lqkc   1m           7Mi             
+web-ui-bf457bfdd-chhbf   1m           7Mi             
+
+--- PROGRESSION (load: conc=100, 150s) ---
+19:32:01Z
+NAME     REFERENCE           TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 2%/70%   2         5         2          16m
+pods: 2
+
+19:32:17Z
+NAME     REFERENCE           TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 2%/70%   2         5         2          17m
+pods: 2
+
+19:32:33Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 25%/70%   2         5         2          17m
+pods: 2
+
+19:32:49Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 58%/70%   2         5         2          17m
+pods: 2
+
+19:33:04Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 60%/70%   2         5         2          17m
+pods: 2
+
+19:33:20Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 40%/70%   2         5         2          18m
+pods: 2
+
+19:33:35Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 41%/70%   2         5         2          18m
+pods: 2
+
+19:33:51Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 60%/70%   2         5         2          18m
+pods: 2
+
+19:34:06Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 45%/70%   2         5         2          18m
+pods: 2
+
+19:34:21Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 43%/70%   2         5         2          19m
+pods: 2
+
+19:34:37Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 33%/70%   2         5         2          19m
+pods: 2
+
+19:34:52Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 56%/70%   2         5         2          19m
+pods: 2
+
+--- END STATE ---
+2026-09-09T19:35:07Z
+NAME     REFERENCE           TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+web-ui   Deployment/web-ui   cpu: 14%/70%   2         5         2          19m
+NAME                     READY   STATUS    RESTARTS   AGE   IP                NODE                     NOMINATED NODE   READINESS GATES
+web-ui-bf457bfdd-9lqkc   1/1     Running   0          19m   fd00:42::5e       trans-service-master     <none>           <none>
+web-ui-bf457bfdd-chhbf   1/1     Running   0          90m   fd00:42:0:1::13   trans-service-worker-2   <none>           <none>
+NAME                     CPU(cores)   MEMORY(bytes)   
+web-ui-bf457bfdd-9lqkc   1m           7Mi             
+web-ui-bf457bfdd-chhbf   1m           7Mi             

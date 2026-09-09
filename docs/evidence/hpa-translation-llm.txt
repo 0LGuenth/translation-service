@@ -1,0 +1,113 @@
+===== TRANSLATION-LLM AUTOSCALING TEST (StatefulSet 3-6) =====
+2026-09-09T19:36:55Z
+--- BASELINE ---
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         3          21m
+NAME                READY   STATUS    RESTARTS   AGE   IP                NODE                     NOMINATED NODE   READINESS GATES
+translation-llm-0   1/1     Running   0          92m   fd00:42:0:3::18   trans-service-worker-1   <none>           <none>
+translation-llm-1   1/1     Running   0          91m   fd00:42:0:1::1a   trans-service-worker-2   <none>           <none>
+translation-llm-2   1/1     Running   0          90m   fd00:42::20       trans-service-master     <none>           <none>
+NAME                CPU(cores)   MEMORY(bytes)   
+translation-llm-0   1m           990Mi           
+translation-llm-1   1m           1014Mi          
+translation-llm-2   1m           991Mi           
+
+--- PROGRESSION (POST /translate, conc=28, 180s) ---
+19:36:56Z
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         3          21m
+pods: 3
+
+19:37:11Z
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         3          21m
+pods: 3
+
+19:37:27Z
+NAME              REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 70%/70%   3         6         3          22m
+pods: 3
+
+19:37:42Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 387%/70%   3         6         3          22m
+pods: 4
+
+19:37:58Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 391%/70%   3         6         6          22m
+pods: 4
+
+19:38:13Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 393%/70%   3         6         6          23m
+pods: 4
+
+19:38:28Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 394%/70%   3         6         6          23m
+pods: 5
+
+19:38:44Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 387%/70%   3         6         6          23m
+pods: 5
+
+19:38:59Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 376%/70%   3         6         6          23m
+pods: 6
+
+19:39:15Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 383%/70%   3         6         6          24m
+pods: 6
+
+19:39:30Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 377%/70%   3         6         6          24m
+pods: 6
+
+19:39:46Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 360%/70%   3         6         6          24m
+pods: 6
+
+19:40:01Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 370%/70%   3         6         6          24m
+pods: 6
+
+19:40:17Z
+NAME              REFERENCE                     TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 287%/70%   3         6         6          25m
+pods: 6
+
+19:40:32Z
+NAME              REFERENCE                     TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 36%/70%   3         6         6          25m
+pods: 6
+
+--- END STATE ---
+2026-09-09T19:40:48Z
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         6          25m
+NAME                READY   STATUS    RESTARTS   AGE     IP                NODE                     NOMINATED NODE   READINESS GATES
+translation-llm-0   1/1     Running   0          96m     fd00:42:0:3::18   trans-service-worker-1   <none>           <none>
+translation-llm-1   1/1     Running   0          95m     fd00:42:0:1::1a   trans-service-worker-2   <none>           <none>
+translation-llm-2   1/1     Running   0          94m     fd00:42::20       trans-service-master     <none>           <none>
+translation-llm-3   1/1     Running   0          3m19s   fd00:42:0:1::1d   trans-service-worker-2   <none>           <none>
+translation-llm-4   1/1     Running   0          2m30s   fd00:42:0:3::5c   trans-service-worker-1   <none>           <none>
+translation-llm-5   1/1     Running   0          112s    fd00:42::65       trans-service-master     <none>           <none>
+NAME                CPU(cores)   MEMORY(bytes)   
+translation-llm-0   1m           1278Mi          
+translation-llm-1   7m           1250Mi          
+translation-llm-2   3m           1263Mi          
+translation-llm-3   1m           1151Mi          
+translation-llm-4   1m           1108Mi          
+translation-llm-5   1m           1053Mi          
+
+--- SCALE-DOWN TREND (load ended, default 5min stabilization -> replicas stay high initially) ---
+19:41:31Z
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         6          26m

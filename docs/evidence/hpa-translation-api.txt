@@ -1,0 +1,98 @@
+===== TRANSLATION-API HPA UNDER LLM LOAD (Deployment 3-8, gateway/IO-bound hypothesis) =====
+2026-09-09T19:36:55Z
+--- BASELINE ---
+NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 1%/70%   3         8         3          92m
+NAME                               CPU(cores)   MEMORY(bytes)   
+translation-api-565869876b-knsdx   1m           6Mi             
+translation-api-565869876b-mc6h9   1m           6Mi             
+translation-api-565869876b-qqwxg   1m           6Mi             
+
+--- PROGRESSION ---
+19:36:56Z
+NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 1%/70%   3         8         3          92m
+pods: 3
+
+19:37:11Z
+NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 2%/70%   3         8         3          92m
+pods: 3
+
+19:37:27Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 10%/70%   3         8         3          93m
+pods: 3
+
+19:37:42Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 12%/70%   3         8         3          93m
+pods: 3
+
+19:37:58Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 12%/70%   3         8         3          93m
+pods: 3
+
+19:38:13Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 12%/70%   3         8         3          93m
+pods: 3
+
+19:38:28Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 13%/70%   3         8         3          94m
+pods: 3
+
+19:38:44Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 15%/70%   3         8         3          94m
+pods: 3
+
+19:38:59Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 17%/70%   3         8         3          94m
+pods: 3
+
+19:39:15Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 17%/70%   3         8         3          94m
+pods: 3
+
+19:39:30Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 18%/70%   3         8         3          95m
+pods: 3
+
+19:39:46Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 21%/70%   3         8         3          95m
+pods: 3
+
+19:40:01Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 21%/70%   3         8         3          95m
+pods: 3
+
+19:40:17Z
+NAME              REFERENCE                    TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 16%/70%   3         8         3          95m
+pods: 3
+
+19:40:32Z
+NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 3%/70%   3         8         3          96m
+pods: 3
+
+--- END STATE ---
+2026-09-09T19:40:48Z
+NAME              REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+translation-api   Deployment/translation-api   cpu: 1%/70%   3         8         3          96m
+NAME                               READY   STATUS    RESTARTS      AGE   IP                NODE                     NOMINATED NODE   READINESS GATES
+translation-api-565869876b-knsdx   1/1     Running   4 (95m ago)   96m   fd00:42:0:1::12   trans-service-worker-2   <none>           <none>
+translation-api-565869876b-mc6h9   1/1     Running   4 (95m ago)   96m   fd00:42::14       trans-service-master     <none>           <none>
+translation-api-565869876b-qqwxg   1/1     Running   4 (95m ago)   96m   fd00:42:0:3::14   trans-service-worker-1   <none>           <none>
+NAME                               CPU(cores)   MEMORY(bytes)   
+translation-api-565869876b-knsdx   1m           12Mi            
+translation-api-565869876b-mc6h9   1m           11Mi            
+translation-api-565869876b-qqwxg   1m           10Mi            

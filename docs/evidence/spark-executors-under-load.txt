@@ -1,0 +1,108 @@
+===== SPARK EXECUTORS UNDER LLM LOAD (dynamic alloc min1/max4) =====
+2026-09-09T19:36:55Z
+--- BASELINE ---
+NAME                                   READY   STATUS    RESTARTS   AGE   IP                NODE                     NOMINATED NODE   READINESS GATES
+spark-streaming-job-759bcd9454-2bmfg   1/1     Running   0          21m   fd00:42:0:3::57   trans-service-worker-1   <none>           <none>
+exec pods:
+spark-streaming-job-exec-3                          1/1     Running   0             18m
+spark-streaming-job-exec-4                          1/1     Running   0             18m
+spark-streaming-job-exec-5                          1/1     Running   0             18m
+spark-streaming-job-exec-6                          1/1     Running   0             9m55s
+
+--- PROGRESSION ---
+@ 19:36:56Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     21m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-3                          1/1   Running   0             18m
+spark-streaming-job-exec-4                          1/1   Running   0             18m
+spark-streaming-job-exec-5                          1/1   Running   0             18m
+spark-streaming-job-exec-6                          1/1   Running   0             9m55s
+exec count:
+4
+@ 19:37:17Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     21m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-3                          1/1   Running   0             19m
+spark-streaming-job-exec-4                          1/1   Running   0             19m
+spark-streaming-job-exec-5                          1/1   Running   0             19m
+spark-streaming-job-exec-6                          1/1   Running   0             10m
+exec count:
+4
+@ 19:37:38Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     22m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-3                          0/1   Terminating         0             19m
+spark-streaming-job-exec-4                          1/1   Running             0             19m
+spark-streaming-job-exec-5                          1/1   Running             0             19m
+spark-streaming-job-exec-6                          1/1   Running             0             10m
+exec count:
+4
+@ 19:37:59Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     22m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-4                          1/1   Running     0             19m
+spark-streaming-job-exec-5                          0/1   OOMKilled   0             19m
+spark-streaming-job-exec-6                          1/1   Running     0             10m
+spark-streaming-job-exec-7                          1/1   Running     0             21s
+exec count:
+4
+@ 19:38:20Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     22m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running             0             1s
+spark-streaming-job-exec-7                          1/1   Running             0             42s
+spark-streaming-job-exec-8                          1/1   Running             0             20s
+spark-streaming-job-exec-9                          1/1   Running             0             9s
+exec count:
+4
+@ 19:38:41Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     23m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running   0             22s
+spark-streaming-job-exec-7                          1/1   Running   0             63s
+spark-streaming-job-exec-8                          1/1   Running   0             41s
+spark-streaming-job-exec-9                          1/1   Running   0             30s
+exec count:
+4
+@ 19:39:02Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     23m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running             0             44s
+spark-streaming-job-exec-11                         1/1   Running             0             4s
+spark-streaming-job-exec-8                          1/1   Running             0             63s
+spark-streaming-job-exec-9                          1/1   Running             0             52s
+exec count:
+4
+@ 19:39:23Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     23m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running   0             65s
+spark-streaming-job-exec-11                         1/1   Running   0             25s
+spark-streaming-job-exec-12                         1/1   Running   0             13s
+spark-streaming-job-exec-9                          1/1   Running   0             73s
+exec count:
+4
+@ 19:39:44Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     24m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running   0             86s
+spark-streaming-job-exec-11                         1/1   Running   0             46s
+spark-streaming-job-exec-12                         1/1   Running   0             34s
+spark-streaming-job-exec-9                          1/1   Running   0             94s
+exec count:
+4
+@ 19:40:05Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     24m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running   0             107s
+spark-streaming-job-exec-11                         1/1   Running   0             67s
+spark-streaming-job-exec-12                         1/1   Running   0             55s
+spark-streaming-job-exec-9                          1/1   Running   0             115s
+exec count:
+4
+@ 19:40:27Z
+spark-streaming-job-759bcd9454-2bmfg   1/1   Running   0     24m   fd00:42:0:3::57   trans-service-worker-1   <none>   <none>
+spark-streaming-job-exec-10                         1/1   Running   0             2m8s
+spark-streaming-job-exec-11                         1/1   Running   0             88s
+spark-streaming-job-exec-12                         1/1   Running   0             76s
+spark-streaming-job-exec-9                          1/1   Running   0             2m16s
+exec count:
+4
+--- END STATE ---
+2026-09-09T19:40:49Z
+spark-streaming-job-exec-10                         1/1   Running   0             2m30s
+spark-streaming-job-exec-11                         1/1   Running   0             110s
+spark-streaming-job-exec-12                         1/1   Running   0             98s
+spark-streaming-job-exec-9                          1/1   Running   0             2m38s
+exec count:
+4

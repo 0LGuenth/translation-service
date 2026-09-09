@@ -1,0 +1,65 @@
+@ 19:36:56Z
+translation-llm-0   1/1   Running   0     92m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     91m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     90m   fd00:42::20       trans-service-master     <none>   <none>
+@ 19:37:17Z
+translation-llm-0   1/1   Running   0     92m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     92m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     91m   fd00:42::20       trans-service-master     <none>   <none>
+@ 19:37:38Z
+translation-llm-0   1/1   Running             0     93m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running             0     92m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running             0     91m   fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   0/1   ContainerCreating   0     9s    <none>            trans-service-worker-2   <none>   <none>
+@ 19:37:58Z
+translation-llm-0   1/1   Running   0     93m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     92m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     91m   fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   0/1   Running   0     30s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+@ 19:38:20Z
+translation-llm-0   1/1   Running   0     94m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     93m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     92m   fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     51s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   0/1   Pending   0     2s    <none>            <none>                   <none>   <none>
+@ 19:38:40Z
+translation-llm-0   1/1   Running   0     94m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     93m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     92m   fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     72s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   0/1   Running   0     23s   fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+@ 19:39:02Z
+translation-llm-0   1/1   Running             0     94m   fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running             0     93m   fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running             0     93m   fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running             0     93s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   1/1   Running             0     44s   fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+translation-llm-5   0/1   ContainerCreating   0     6s    <none>            trans-service-master     <none>   <none>
+@ 19:39:23Z
+translation-llm-0   1/1   Running   0     95m    fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     94m    fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     93m    fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     114s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   1/1   Running   0     65s    fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+translation-llm-5   0/1   Running   0     27s    fd00:42::65       trans-service-master     <none>   <none>
+@ 19:39:44Z
+translation-llm-0   1/1   Running   0     95m     fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     94m     fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     93m     fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     2m15s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   1/1   Running   0     86s     fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+translation-llm-5   1/1   Running   0     48s     fd00:42::65       trans-service-master     <none>   <none>
+@ 19:40:05Z
+translation-llm-0   1/1   Running   0     95m     fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     94m     fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     94m     fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     2m36s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   1/1   Running   0     107s    fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+translation-llm-5   1/1   Running   0     69s     fd00:42::65       trans-service-master     <none>   <none>
+@ 19:40:27Z
+translation-llm-0   1/1   Running   0     96m     fd00:42:0:3::18   trans-service-worker-1   <none>   <none>
+translation-llm-1   1/1   Running   0     95m     fd00:42:0:1::1a   trans-service-worker-2   <none>   <none>
+translation-llm-2   1/1   Running   0     94m     fd00:42::20       trans-service-master     <none>   <none>
+translation-llm-3   1/1   Running   0     2m58s   fd00:42:0:1::1d   trans-service-worker-2   <none>   <none>
+translation-llm-4   1/1   Running   0     2m9s    fd00:42:0:3::5c   trans-service-worker-1   <none>   <none>
+translation-llm-5   1/1   Running   0     91s     fd00:42::65       trans-service-master     <none>   <none>

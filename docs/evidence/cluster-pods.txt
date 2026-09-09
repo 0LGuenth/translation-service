@@ -1,0 +1,79 @@
+NAMESPACE            NAME                                                READY   STATUS      RESTARTS        AGE     IP                NODE                     NOMINATED NODE   READINESS GATES
+cert-manager         cert-manager-67bd5b55cc-fhqv2                       1/1     Running     0               3h29m   fd00:42:0:3::2    trans-service-worker-1   <none>           <none>
+cert-manager         cert-manager-cainjector-d87ffb78f-4lvk9             1/1     Running     0               3h29m   fd00:42:0:1::2    trans-service-worker-2   <none>           <none>
+cert-manager         cert-manager-webhook-5548dcfb4d-9jgqr               1/1     Running     0               3h29m   fd00:42:0:1::3    trans-service-worker-2   <none>           <none>
+default              analytics-api-5c6bb47f54-6dct7                      1/1     Running     0               41m     fd00:42:0:3::63   trans-service-worker-1   <none>           <none>
+default              analytics-api-5c6bb47f54-bjqjf                      1/1     Running     0               41m     fd00:42:0:1::23   trans-service-worker-2   <none>           <none>
+default              analytics-db-0                                      1/1     Running     0               3h9m    fd00:42:0:3::17   trans-service-worker-1   <none>           <none>
+default              registry-dbbbfc869-nrprh                            1/1     Running     0               3h27m   fd00:42:0:3::8    trans-service-worker-1   <none>           <none>
+default              spark-streaming-job-759bcd9454-2bmfg                1/1     Running     1 (40m ago)     118m    fd00:42:0:3::57   trans-service-worker-1   <none>           <none>
+default              spark-streaming-job-exec-1                          1/1     Running     0               40m     fd00:42::6a       trans-service-master     <none>           <none>
+default              spark-streaming-job-exec-2                          1/1     Running     0               40m     fd00:42:0:3::64   trans-service-worker-1   <none>           <none>
+default              spark-streaming-job-exec-3                          1/1     Running     0               40m     fd00:42::6b       trans-service-master     <none>           <none>
+default              spark-streaming-job-exec-4                          1/1     Running     0               40m     fd00:42:0:3::65   trans-service-worker-1   <none>           <none>
+default              strimzi-cluster-operator-57b47c8c7f-h8l6z           1/1     Running     0               3h21m   fd00:42::13       trans-service-master     <none>           <none>
+default              translation-api-5658f5f78d-4lrjp                    1/1     Running     0               62m     fd00:42:0:3::60   trans-service-worker-1   <none>           <none>
+default              translation-api-5658f5f78d-qjvsj                    1/1     Running     0               62m     fd00:42:0:1::1f   trans-service-worker-2   <none>           <none>
+default              translation-api-5658f5f78d-rdb9b                    1/1     Running     0               63m     fd00:42:0:1::1e   trans-service-worker-2   <none>           <none>
+default              translation-kafka-entity-operator-569c48fcb-nj6tv   2/2     Running     0               3h8m    fd00:42::19       trans-service-master     <none>           <none>
+default              translation-kafka-main-0                            1/1     Running     0               3h9m    fd00:42:0:3::16   trans-service-worker-1   <none>           <none>
+default              translation-kafka-main-1                            1/1     Running     0               3h9m    fd00:42:0:1::15   trans-service-worker-2   <none>           <none>
+default              translation-kafka-main-2                            1/1     Running     0               3h9m    fd00:42::18       trans-service-master     <none>           <none>
+default              translation-llm-0                                   1/1     Running     0               42m     fd00:42:0:3::62   trans-service-worker-1   <none>           <none>
+default              translation-llm-1                                   1/1     Running     0               42m     fd00:42:0:1::21   trans-service-worker-2   <none>           <none>
+default              translation-llm-2                                   1/1     Running     0               43m     fd00:42::69       trans-service-master     <none>           <none>
+default              web-ui-bf457bfdd-9lqkc                              1/1     Running     0               118m    fd00:42::5e       trans-service-master     <none>           <none>
+default              web-ui-bf457bfdd-chhbf                              1/1     Running     0               3h9m    fd00:42:0:1::13   trans-service-worker-2   <none>           <none>
+external-dns         external-dns-7568c59799-xzvh6                       1/1     Running     0               3h28m   fd00:42::8        trans-service-master     <none>           <none>
+kube-system          coredns-54996dc9b4-75sj7                            1/1     Running     0               3h29m   fd00:42::3        trans-service-master     <none>           <none>
+kube-system          helm-install-traefik-2wdtn                          0/1     Completed   0               3h27m   <none>            trans-service-worker-2   <none>           <none>
+kube-system          helm-install-traefik-crd-httds                      0/1     Completed   0               3h29m   <none>            trans-service-master     <none>           <none>
+kube-system          metrics-server-6dc596dfb8-pzn7k                     1/1     Running     0               3h29m   fd00:42::2        trans-service-master     <none>           <none>
+kube-system          svclb-traefik-803144e6-4x2fz                        2/2     Running     0               3h28m   fd00:42::6        trans-service-master     <none>           <none>
+kube-system          svclb-traefik-803144e6-jj7s2                        2/2     Running     0               3h28m   fd00:42:0:3::3    trans-service-worker-1   <none>           <none>
+kube-system          svclb-traefik-803144e6-kp2g7                        2/2     Running     0               3h28m   fd00:42:0:1::4    trans-service-worker-2   <none>           <none>
+kube-system          traefik-57b8d89788-mgjsn                            1/1     Running     0               3h27m   fd00:42:0:1::9    trans-service-worker-2   <none>           <none>
+longhorn-system      csi-attacher-866df4b764-2wvlb                       1/1     Running     0               3h25m   fd00:42:0:1::b    trans-service-worker-2   <none>           <none>
+longhorn-system      csi-attacher-866df4b764-9nnwq                       1/1     Running     0               3h25m   fd00:42::e        trans-service-master     <none>           <none>
+longhorn-system      csi-attacher-866df4b764-fhrll                       1/1     Running     0               3h25m   fd00:42:0:3::e    trans-service-worker-1   <none>           <none>
+longhorn-system      csi-provisioner-5c696f97cd-2csxl                    1/1     Running     0               3h25m   fd00:42:0:3::d    trans-service-worker-1   <none>           <none>
+longhorn-system      csi-provisioner-5c696f97cd-44bt8                    1/1     Running     0               3h25m   fd00:42:0:1::c    trans-service-worker-2   <none>           <none>
+longhorn-system      csi-provisioner-5c696f97cd-kfl5z                    1/1     Running     0               3h25m   fd00:42::11       trans-service-master     <none>           <none>
+longhorn-system      csi-resizer-7dd456f456-hfddv                        1/1     Running     0               3h25m   fd00:42:0:3::f    trans-service-worker-1   <none>           <none>
+longhorn-system      csi-resizer-7dd456f456-s6jjm                        1/1     Running     0               3h25m   fd00:42:0:1::d    trans-service-worker-2   <none>           <none>
+longhorn-system      csi-resizer-7dd456f456-xqk2f                        1/1     Running     0               3h25m   fd00:42::f        trans-service-master     <none>           <none>
+longhorn-system      csi-snapshotter-7997dc5fcd-blqx4                    1/1     Running     0               3h25m   fd00:42:0:1::e    trans-service-worker-2   <none>           <none>
+longhorn-system      csi-snapshotter-7997dc5fcd-t2wl7                    1/1     Running     0               3h25m   fd00:42:0:3::10   trans-service-worker-1   <none>           <none>
+longhorn-system      csi-snapshotter-7997dc5fcd-vf7cv                    1/1     Running     0               3h25m   fd00:42::10       trans-service-master     <none>           <none>
+longhorn-system      engine-image-ei-493e04e7-khch2                      1/1     Running     0               3h27m   fd00:42:0:3::7    trans-service-worker-1   <none>           <none>
+longhorn-system      engine-image-ei-493e04e7-njlps                      1/1     Running     0               3h27m   fd00:42::b        trans-service-master     <none>           <none>
+longhorn-system      engine-image-ei-493e04e7-xxpqf                      1/1     Running     0               3h27m   fd00:42:0:1::7    trans-service-worker-2   <none>           <none>
+longhorn-system      instance-manager-2b9c0d4968bba0383d5d0e643d6fa4a4   1/1     Running     0               3h27m   fd00:42::d        trans-service-master     <none>           <none>
+longhorn-system      instance-manager-6b155b398152c1ee4aa0fd909cd1033b   1/1     Running     0               3h27m   fd00:42:0:1::a    trans-service-worker-2   <none>           <none>
+longhorn-system      instance-manager-c113461fc6444963d88e594c384d345c   1/1     Running     0               3h27m   fd00:42:0:3::a    trans-service-worker-1   <none>           <none>
+longhorn-system      longhorn-csi-plugin-k5jv7                           3/3     Running     0               3h25m   fd00:42::12       trans-service-master     <none>           <none>
+longhorn-system      longhorn-csi-plugin-nz8nz                           3/3     Running     0               3h25m   fd00:42:0:1::f    trans-service-worker-2   <none>           <none>
+longhorn-system      longhorn-csi-plugin-tb28z                           3/3     Running     0               3h25m   fd00:42:0:3::11   trans-service-worker-1   <none>           <none>
+longhorn-system      longhorn-driver-deployer-8688565869-2qdcs           1/1     Running     1 (3h25m ago)   3h28m   fd00:42:0:1::6    trans-service-worker-2   <none>           <none>
+longhorn-system      longhorn-manager-97lxs                              2/2     Running     1 (3h27m ago)   3h28m   fd00:42::9        trans-service-master     <none>           <none>
+longhorn-system      longhorn-manager-g8p9t                              2/2     Running     2 (3h27m ago)   3h28m   fd00:42:0:3::5    trans-service-worker-1   <none>           <none>
+longhorn-system      longhorn-manager-ns2p8                              2/2     Running     0               3h28m   fd00:42:0:1::5    trans-service-worker-2   <none>           <none>
+longhorn-system      longhorn-ui-79b9b8cbdc-7wb9t                        1/1     Running     0               3h28m   fd00:42:0:3::6    trans-service-worker-1   <none>           <none>
+longhorn-system      longhorn-ui-79b9b8cbdc-l64tm                        1/1     Running     0               3h28m   fd00:42::a        trans-service-master     <none>           <none>
+seaweedfs            seaweedfs-bucket-init-qzncf                         0/1     Completed   0               3h18m   fd00:42:0:3::12   trans-service-worker-1   <none>           <none>
+seaweedfs            seaweedfs-filer-0                                   1/1     Running     0               3h18m   fd00:42:0:1::10   trans-service-worker-2   <none>           <none>
+seaweedfs            seaweedfs-master-0                                  1/1     Running     0               3h18m   fd00:42:0:3::13   trans-service-worker-1   <none>           <none>
+seaweedfs            seaweedfs-volume-0                                  1/1     Running     0               3h18m   fd00:42:0:1::11   trans-service-worker-2   <none>           <none>
+system-upgrade       system-upgrade-controller-d7ccf9944-vvnfj           1/1     Running     0               3h27m   fd00:42::c        trans-service-master     <none>           <none>
+translate-platform   grafana-5fdc57484b-qnhct                            1/1     Running     0               3h9m    fd00:42:0:1::18   trans-service-worker-2   <none>           <none>
+translate-platform   grafana-alloy-fpmlp                                 1/1     Running     0               3h9m    fd00:42:0:1::14   trans-service-worker-2   <none>           <none>
+translate-platform   grafana-alloy-kmdgg                                 1/1     Running     0               3h9m    fd00:42:0:3::15   trans-service-worker-1   <none>           <none>
+translate-platform   grafana-alloy-psrp9                                 1/1     Running     0               3h9m    fd00:42::17       trans-service-master     <none>           <none>
+translate-platform   grafana-loki-8587dbd755-74ctg                       1/1     Running     0               3h9m    fd00:42:0:1::16   trans-service-worker-2   <none>           <none>
+translate-platform   grafana-prometheus-f48f5477c-xqz5r                  1/1     Running     0               3h9m    fd00:42:0:1::17   trans-service-worker-2   <none>           <none>
+translate-platform   grafana-tempo-76c457fb77-9qkdn                      1/1     Running     1 (65m ago)     3h9m    fd00:42:0:1::19   trans-service-worker-2   <none>           <none>
+NAME              REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api     Deployment/analytics-api      cpu: 2%/70%   2         5         2          118m
+translation-api   Deployment/translation-api    cpu: 1%/70%   3         8         3          3h9m
+translation-llm   StatefulSet/translation-llm   cpu: 0%/70%   3         6         3          118m
+web-ui            Deployment/web-ui             cpu: 2%/70%   2         5         2          118m

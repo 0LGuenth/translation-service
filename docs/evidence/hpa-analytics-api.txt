@@ -1,0 +1,89 @@
+===== ANALYTICS-API AUTOSCALING TEST =====
+2026-09-09T19:27:21Z
+--- BASELINE ---
+NAME            REFERENCE                  TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 2%/70%   2         5         2          12m
+NAME                             CPU(cores)   MEMORY(bytes)   
+analytics-api-594cfb8556-4c789   1m           4Mi             
+analytics-api-594cfb8556-q9d2v   1m           3Mi             
+
+--- PROGRESSION (load: conc=80, 150s) ---
+19:27:21Z
+NAME            REFERENCE                  TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 2%/70%   2         5         2          12m
+pods: 2
+
+19:27:36Z
+NAME            REFERENCE                  TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 2%/70%   2         5         2          12m
+pods: 2
+
+19:27:52Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 27%/70%   2         5         2          12m
+pods: 2
+
+19:28:07Z
+NAME            REFERENCE                  TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 119%/70%   2         5         2          12m
+pods: 4
+
+19:28:23Z
+NAME            REFERENCE                  TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 118%/70%   2         5         4          13m
+pods: 4
+
+19:28:38Z
+NAME            REFERENCE                  TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 110%/70%   2         5         4          13m
+pods: 4
+
+19:28:53Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 79%/70%   2         5         4          13m
+pods: 4
+
+19:29:09Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 74%/70%   2         5         4          13m
+pods: 4
+
+19:29:24Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 76%/70%   2         5         4          14m
+pods: 4
+
+19:29:39Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 77%/70%   2         5         4          14m
+pods: 4
+
+19:29:55Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 76%/70%   2         5         4          14m
+pods: 4
+
+19:30:10Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 77%/70%   2         5         4          14m
+pods: 4
+
+--- END STATE ---
+2026-09-09T19:30:26Z
+NAME            REFERENCE                  TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 42%/70%   2         5         4          15m
+NAME                             READY   STATUS    RESTARTS   AGE     IP                NODE                     NOMINATED NODE   READINESS GATES
+analytics-api-594cfb8556-4c789   1/1     Running   0          86m     fd00:42::15       trans-service-master     <none>           <none>
+analytics-api-594cfb8556-d7zkl   1/1     Running   0          2m27s   fd00:42:0:1::1b   trans-service-worker-2   <none>           <none>
+analytics-api-594cfb8556-fzwv8   1/1     Running   0          2m27s   fd00:42:0:1::1c   trans-service-worker-2   <none>           <none>
+analytics-api-594cfb8556-q9d2v   1/1     Running   0          14m     fd00:42:0:3::56   trans-service-worker-1   <none>           <none>
+NAME                             CPU(cores)   MEMORY(bytes)   
+analytics-api-594cfb8556-4c789   1m           8Mi             
+analytics-api-594cfb8556-d7zkl   1m           7Mi             
+analytics-api-594cfb8556-fzwv8   1m           7Mi             
+analytics-api-594cfb8556-q9d2v   13m          8Mi             
+
+--- SCALE-DOWN TREND ---
+19:41:31Z
+NAME            REFERENCE                  TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+analytics-api   Deployment/analytics-api   cpu: 2%/70%   2         5         2          26m

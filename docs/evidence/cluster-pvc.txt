@@ -1,0 +1,18 @@
+NAMESPACE            NAME                              STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+default              data-0-translation-kafka-main-0   Bound    pvc-4efa16d4-c816-41ea-b2b8-416590991ec6   10Gi       RWO            longhorn       <unset>                 3h9m
+default              data-0-translation-kafka-main-1   Bound    pvc-9797113a-7830-4137-bfd7-e4826205f364   10Gi       RWO            longhorn       <unset>                 3h9m
+default              data-0-translation-kafka-main-2   Bound    pvc-79f1da7e-a981-4684-bdd7-5d3cc1c875f7   10Gi       RWO            longhorn       <unset>                 3h9m
+default              data-analytics-db-0               Bound    pvc-f3ab84ae-76c8-484d-a2fd-62778a247463   5Gi        RWO            longhorn       <unset>                 3h9m
+default              hf-cache-translation-llm-0        Bound    pvc-a050df39-0473-46df-a24b-47a26f87137b   10Gi       RWO            longhorn       <unset>                 3h9m
+default              hf-cache-translation-llm-1        Bound    pvc-7d973a67-3463-4c5f-9fe2-577fbc8c454d   10Gi       RWO            longhorn       <unset>                 3h8m
+default              hf-cache-translation-llm-2        Bound    pvc-b4f78b8f-f88b-44ad-9304-908e47e6c68d   10Gi       RWO            longhorn       <unset>                 3h7m
+default              hf-cache-translation-llm-3        Bound    pvc-71d99e15-6672-4e78-882e-109d20c6f51a   10Gi       RWO            longhorn       <unset>                 96m
+default              hf-cache-translation-llm-4        Bound    pvc-cce52726-f69e-4bb7-9bde-e651da0a271f   10Gi       RWO            longhorn       <unset>                 95m
+default              hf-cache-translation-llm-5        Bound    pvc-b1ee06c8-5ebd-405a-8c7b-28b905d432f3   10Gi       RWO            longhorn       <unset>                 94m
+seaweedfs            data-seaweedfs-filer-0            Bound    pvc-11fd2794-e782-44e0-871a-09aec0a82514   2Gi        RWO            longhorn       <unset>                 3h18m
+seaweedfs            data-seaweedfs-master-0           Bound    pvc-039b7cb7-4a70-4664-bfae-3d64f301e418   1Gi        RWO            longhorn       <unset>                 3h18m
+seaweedfs            data-seaweedfs-volume-0           Bound    pvc-796bbff9-0ef2-4cba-9c39-15124fc647ec   20Gi       RWO            longhorn       <unset>                 3h18m
+translate-platform   grafana-loki-storage              Bound    pvc-db890677-6637-4215-b7a9-e8de956f492f   5Gi        RWO            longhorn       <unset>                 3h9m
+translate-platform   grafana-prometheus-storage        Bound    pvc-35448f3a-2bf6-41e1-8448-5f7747b8edde   5Gi        RWO            longhorn       <unset>                 3h9m
+translate-platform   grafana-storage                   Bound    pvc-e6ca63f0-a1a5-4db5-a2d6-43f3ce460358   2Gi        RWO            longhorn       <unset>                 3h9m
+translate-platform   grafana-tempo-storage             Bound    pvc-e7a4a1a6-ff51-4474-b039-6760cd99c73e   5Gi        RWO            longhorn       <unset>                 3h9m
