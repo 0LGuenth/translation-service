@@ -75,7 +75,8 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: loki
-          image: "docker.io/grafana/loki:latest"
+          # Pinned to the digest deployed 2026-09 for reproducibility.
+          image: "docker.io/grafana/loki@sha256:d70e4659623f3e109af669cae76fe2a5dd5be54e2298fe8aed380d982fbc2500"
           imagePullPolicy: IfNotPresent
           args:
             - -config.file=/etc/loki/loki.yaml

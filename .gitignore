@@ -1,6 +1,8 @@
 # Terraform
 **/.terraform/
 **/.terraform.lock.hcl
+# ...but keep the pinned provider lock for the project's terraform config.
+!infra/terraform/.terraform.lock.hcl
 **/*.tfstate
 **/*.tfstate.*
 **/terraform.tfvars

@@ -60,7 +60,8 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: tempo
-          image: "docker.io/grafana/tempo:latest"
+          # Pinned to the digest deployed 2026-09 for reproducibility.
+          image: "docker.io/grafana/tempo@sha256:1ce31d6d7ffab62189685e8c47881d4a561c5d38bd0dbd66e40ca83cef07923d"
           imagePullPolicy: IfNotPresent
           args:
             - -config.file=/etc/tempo/tempo.yaml

@@ -126,7 +126,8 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: prometheus
-          image: "docker.io/prom/prometheus:latest"
+          # Pinned to the digest deployed 2026-09 for reproducibility.
+          image: "docker.io/prom/prometheus@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
           imagePullPolicy: IfNotPresent
           args:
             - --config.file=/etc/prometheus/prometheus.yml

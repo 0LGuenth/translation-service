@@ -1,3 +1,10 @@
 ---
-- name: k3s-dhbw-cloud-role
-  src: https://github.com/pfisterer/k3s-dhbw-cloud-role.git
+# Pinned so a fresh checkout resolves the same role and collection versions.
+# Install both with: ansible-galaxy install -r infra/ansible/requirements.yaml
+roles:
+  - name: k3s-dhbw-cloud-role
+    src: https://github.com/pfisterer/k3s-dhbw-cloud-role.git
+    version: 12125aa1c7b9736fa8fa7b4a7bd822169a7a221d
+collections:
+  - name: kubernetes.core
+    version: 6.5.0

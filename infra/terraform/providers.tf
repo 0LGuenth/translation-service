@@ -1,10 +1,12 @@
 terraform {
   required_providers {
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
+      version = "2.9.0"
     }
     openstack = {
-      source = "terraform-provider-openstack/openstack"
+      source  = "terraform-provider-openstack/openstack"
+      version = "3.4.0"
     }
   }
 }

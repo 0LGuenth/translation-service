@@ -6,11 +6,16 @@
   vars:
     kubeconfig_path: "{{ lookup('env', 'KUBECONFIG') | default(playbook_dir ~ '/../kubeconfig-generated.yaml', true) }}"
     strimzi_timeout: "{{ lookup('env', 'STRIMZI_TIMEOUT') | default('300s', true) }}"
+    # Pinned operator release (matches the CRs' kafka.strimzi.io/v1).
+    strimzi_version: "{{ lookup('env', 'STRIMZI_VERSION') | default('1.2.0', true) }}"
   tasks:
-    # apply (idempotent) into default; operator watches default.
-    - name: Install/ensure Strimzi operator
-      ansible.builtin.command:
-        argv: [kubectl, apply, -f, "https://strimzi.io/install/latest?namespace=default"]
+    # Pinned release YAML, namespace rewritten to default, applied idempotently.
+    - name: Install/ensure Strimzi operator (pinned {{ strimzi_version }})
+      ansible.builtin.shell:
+        cmd: >-
+          curl -sL "https://github.com/strimzi/strimzi-kafka-operator/releases/download/{{ strimzi_version }}/strimzi-cluster-operator-{{ strimzi_version }}.yaml"
+          | sed 's/namespace: .*/namespace: default/'
+          | kubectl apply -f -
       environment:
         KUBECONFIG: "{{ kubeconfig_path }}"
       changed_when: true
